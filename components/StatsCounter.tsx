@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { useData } from '../context/DataContext';
+// FIX: Add .tsx extension to file import.
+import { useData } from '../context/DataContext.tsx';
 
 const CountUp: React.FC<{ end: number, duration?: number, suffix?: string }> = ({ end, duration = 2000, suffix = '' }) => {
   const [count, setCount] = useState(0);
@@ -43,7 +45,9 @@ const CountUp: React.FC<{ end: number, duration?: number, suffix?: string }> = (
 
     return () => {
       isMounted.current = false;
-      cancelAnimationFrame(frameId);
+      if (frameId) {
+          cancelAnimationFrame(frameId);
+      }
       observer.disconnect();
     };
   }, [end, duration]);
@@ -54,15 +58,15 @@ const CountUp: React.FC<{ end: number, duration?: number, suffix?: string }> = (
 const StatsCounter: React.FC = () => {
   const { stats } = useData();
   return (
-    <div className="bg-white py-16 sm:py-20">
+    <div className="bg-white dark:bg-gray-800 py-16 sm:py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {stats.map(stat => (
             <div key={stat.id}>
-              <p className="text-4xl md:text-5xl font-extrabold text-brand-blue-700">
+              <p className="text-4xl md:text-5xl font-extrabold text-brand-blue-700 dark:text-brand-blue-400">
                 <CountUp end={stat.value} suffix={stat.suffix} />
               </p>
-              <p className="mt-2 text-base font-medium text-gray-500">{stat.label}</p>
+              <p className="mt-2 text-base font-medium text-gray-500 dark:text-gray-400">{stat.label}</p>
             </div>
           ))}
         </div>

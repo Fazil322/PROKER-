@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 export interface Field {
@@ -5,6 +6,7 @@ export interface Field {
   label: string;
   type: 'text' | 'textarea' | 'number' | 'url' | 'datetime-local';
   required?: boolean;
+  rows?: number;
 }
 
 interface GenericFormProps {
@@ -25,7 +27,7 @@ const InputField: React.FC<{ field: Field; value: any; onChange: (e: React.Chang
     };
 
     if (field.type === 'textarea') {
-        return <textarea {...commonProps} rows={4} />;
+        return <textarea {...commonProps} rows={field.rows || 4} />;
     }
     return <input type={field.type} {...commonProps} />;
 };

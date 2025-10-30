@@ -1,5 +1,7 @@
+
 import React from 'react';
-import { useData } from '../context/DataContext';
+// FIX: Add .tsx extension to file import.
+import { useData } from '../context/DataContext.tsx';
 
 const TrophyIcon: React.FC<{className?: string}> = ({className}) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
@@ -12,12 +14,12 @@ const TrophyIcon: React.FC<{className?: string}> = ({className}) => (
 const Achievements: React.FC = () => {
   const { achievements } = useData();
   return (
-    <section id="achievements" className="bg-brand-blue-900 text-white py-16 sm:py-20">
+    <section id="achievements" className="bg-brand-blue-900 dark:bg-gray-950 text-white py-16 sm:py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
             <TrophyIcon className="w-12 h-12 mx-auto text-brand-yellow-400 mb-4" />
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Prestasi Terbaru</h2>
-          <p className="mt-4 text-lg text-brand-blue-200">Apresiasi untuk para siswa yang mengharumkan nama sekolah.</p>
+          <p className="mt-4 text-lg text-brand-blue-200 dark:text-brand-blue-300">Apresiasi untuk para siswa yang mengharumkan nama sekolah.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {achievements.map((ach) => (

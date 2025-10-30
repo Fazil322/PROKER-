@@ -1,187 +1,240 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { 
-  HERO_DATA,
-  ANNOUNCEMENTS,
-  EVENTS,
-  ARTICLES,
-  ACHIEVEMENTS,
-  GALLERY_IMAGES,
-  TESTIMONIALS,
-  STATS,
-  OSIS_TEAM,
-  SITE_SETTINGS,
-  SITE_CONTENT
-} from '../constants';
-import * as T from '../types';
+
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import {
+  Announcement,
+  Event,
+  Article,
+  Achievement,
+  GalleryImage,
+  Testimonial,
+  TeamMember,
+  Stat,
+  SiteContent,
+  SiteSettings,
+  AdminSection,
+  Toast,
+  Saran,
+// FIX: Add .ts extension to file import.
+} from '../types.ts';
+import {
+  INITIAL_ANNOUNCEMENTS,
+  INITIAL_EVENTS,
+  INITIAL_ARTICLES,
+  INITIAL_ACHIEVEMENTS,
+  INITIAL_GALLERY,
+  INITIAL_TESTIMONIALS,
+  INITIAL_OSIS_TEAM,
+  INITIAL_STATS,
+  INITIAL_SITE_CONTENT,
+  INITIAL_SITE_SETTINGS,
+  INITIAL_SARAN,
+// FIX: Add .ts extension to file import.
+} from '../constants.ts';
+
+const LOCAL_STORAGE_KEY = 'osis-website-data';
 
 interface DataContextType {
+  announcements: Announcement[];
+  setAnnouncements: React.Dispatch<React.SetStateAction<Announcement[]>>;
+  events: Event[];
+  setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
+  articles: Article[];
+  setArticles: React.Dispatch<React.SetStateAction<Article[]>>;
+  achievements: Achievement[];
+  setAchievements: React.Dispatch<React.SetStateAction<Achievement[]>>;
+  gallery: GalleryImage[];
+  setGallery: React.Dispatch<React.SetStateAction<GalleryImage[]>>;
+  testimonials: Testimonial[];
+  setTestimonials: React.Dispatch<React.SetStateAction<Testimonial[]>>;
+  osisTeam: TeamMember[];
+  setOsisTeam: React.Dispatch<React.SetStateAction<TeamMember[]>>;
+  stats: Stat[];
+  setStats: React.Dispatch<React.SetStateAction<Stat[]>>;
+  siteContent: SiteContent;
+  setSiteContent: React.Dispatch<React.SetStateAction<SiteContent>>;
+  siteSettings: SiteSettings;
+  setSiteSettings: React.Dispatch<React.SetStateAction<SiteSettings>>;
+  saran: Saran[];
+  setSaran: React.Dispatch<React.SetStateAction<Saran[]>>;
+  addSaran: (newSaran: Omit<Saran, 'id' | 'createdAt'>) => void;
+
+  // Admin state
   isLoggedIn: boolean;
   login: (password: string) => boolean;
   logout: () => void;
-  updatePassword: (oldPass: string, newPass: string) => boolean;
   showLogin: boolean;
   setShowLogin: React.Dispatch<React.SetStateAction<boolean>>;
+  activeAdminSection: AdminSection;
+  setActiveAdminSection: React.Dispatch<React.SetStateAction<AdminSection>>;
+  updatePassword: (current: string, newPass: string) => boolean;
   
-  heroData: T.HeroData;
-  setHeroData: React.Dispatch<React.SetStateAction<T.HeroData>>;
-  announcements: T.Announcement[];
-  setAnnouncements: React.Dispatch<React.SetStateAction<T.Announcement[]>>;
-  events: T.Event[];
-  setEvents: React.Dispatch<React.SetStateAction<T.Event[]>>;
-  articles: T.Article[];
-  setArticles: React.Dispatch<React.SetStateAction<T.Article[]>>;
-  achievements: T.Achievement[];
-  setAchievements: React.Dispatch<React.SetStateAction<T.Achievement[]>>;
-  galleryImages: T.GalleryImage[];
-  setGalleryImages: React.Dispatch<React.SetStateAction<T.GalleryImage[]>>;
-  testimonials: T.Testimonial[];
-  setTestimonials: React.Dispatch<React.SetStateAction<T.Testimonial[]>>;
-  stats: T.Stat[];
-  setStats: React.Dispatch<React.SetStateAction<T.Stat[]>>;
-  osisTeam: T.TeamMember[];
-  setOsisTeam: React.Dispatch<React.SetStateAction<T.TeamMember[]>>;
-  siteSettings: T.SiteSettings;
-  setSiteSettings: React.Dispatch<React.SetStateAction<T.SiteSettings>>;
-  siteContent: T.SiteContent;
-  setSiteContent: React.Dispatch<React.SetStateAction<T.SiteContent>>;
-
-
-  toasts: T.Toast[];
-  addToast: (message: string, type: T.Toast['type']) => void;
-
-  activeAdminSection: T.AdminSection;
-  setActiveAdminSection: React.Dispatch<React.SetStateAction<T.AdminSection>>;
+  // Toast notifications
+  toasts: Toast[];
+  addToast: (message: string, type: Toast['type']) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const getInitialState = () => {
   try {
-    const savedData = localStorage.getItem('osisCmsData');
-    if (savedData) {
-      const parsed = JSON.parse(savedData);
-      // Basic validation to ensure we don't load corrupted data
-      if (parsed.siteContent && parsed.siteContent.siteName) {
-        return parsed;
-      }
+    const item = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (item) {
+      const parsed = JSON.parse(item);
+      // Ensure all keys from initial state are present to avoid crashes after updates
+      return {
+          ...{ // Provide defaults for any potentially missing keys
+              announcements: INITIAL_ANNOUNCEMENTS,
+              events: INITIAL_EVENTS,
+              articles: INITIAL_ARTICLES,
+              achievements: INITIAL_ACHIEVEMENTS,
+              gallery: INITIAL_GALLERY,
+              testimonials: INITIAL_TESTIMONIALS,
+              osisTeam: INITIAL_OSIS_TEAM,
+              stats: INITIAL_STATS,
+              siteContent: INITIAL_SITE_CONTENT,
+              siteSettings: INITIAL_SITE_SETTINGS,
+              saran: INITIAL_SARAN,
+              adminPassword: 'admin',
+          },
+          ...parsed
+      };
     }
   } catch (error) {
-    console.error("Could not load data from localStorage", error);
+    console.warn('Error reading from localStorage', error);
   }
+
   return {
-    heroData: HERO_DATA,
-    announcements: ANNOUNCEMENTS,
-    events: EVENTS,
-    articles: ARTICLES,
-    achievements: ACHIEVEMENTS,
-    galleryImages: GALLERY_IMAGES,
-    testimonials: TESTIMONIALS,
-    stats: STATS,
-    osisTeam: OSIS_TEAM,
-    siteSettings: SITE_SETTINGS,
-    siteContent: SITE_CONTENT,
-    adminPassword: "OSISSMAKDA",
+    announcements: INITIAL_ANNOUNCEMENTS,
+    events: INITIAL_EVENTS,
+    articles: INITIAL_ARTICLES,
+    achievements: INITIAL_ACHIEVEMENTS,
+    gallery: INITIAL_GALLERY,
+    testimonials: INITIAL_TESTIMONIALS,
+    osisTeam: INITIAL_OSIS_TEAM,
+    stats: INITIAL_STATS,
+    siteContent: INITIAL_SITE_CONTENT,
+    siteSettings: INITIAL_SITE_SETTINGS,
+    saran: INITIAL_SARAN,
+    adminPassword: 'admin', // Default password
   };
 };
 
 
-export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
+export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [initialState] = useState(getInitialState);
+  
+  const [announcements, setAnnouncements] = useState<Announcement[]>(initialState.announcements);
+  const [events, setEvents] = useState<Event[]>(initialState.events);
+  const [articles, setArticles] = useState<Article[]>(initialState.articles);
+  const [achievements, setAchievements] = useState<Achievement[]>(initialState.achievements);
+  const [gallery, setGallery] = useState<GalleryImage[]>(initialState.gallery);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialState.testimonials);
+  const [osisTeam, setOsisTeam] = useState<TeamMember[]>(initialState.osisTeam);
+  const [stats, setStats] = useState<Stat[]>(initialState.stats);
+  const [siteContent, setSiteContent] = useState<SiteContent>(initialState.siteContent);
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(initialState.siteSettings);
+  const [saran, setSaran] = useState<Saran[]>(initialState.saran);
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [activeAdminSection, setActiveAdminSection] = useState<T.AdminSection>('dashboard');
-  
-  const [initialState] = useState(getInitialState);
-
-  // Content States
-  const [heroData, setHeroData] = useState<T.HeroData>(initialState.heroData);
-  const [announcements, setAnnouncements] = useState<T.Announcement[]>(initialState.announcements);
-  const [events, setEvents] = useState<T.Event[]>(initialState.events);
-  const [articles, setArticles] = useState<T.Article[]>(initialState.articles);
-  const [achievements, setAchievements] = useState<T.Achievement[]>(initialState.achievements);
-  const [galleryImages, setGalleryImages] = useState<T.GalleryImage[]>(initialState.galleryImages);
-  const [testimonials, setTestimonials] = useState<T.Testimonial[]>(initialState.testimonials);
-  const [stats, setStats] = useState<T.Stat[]>(initialState.stats);
-  const [osisTeam, setOsisTeam] = useState<T.TeamMember[]>(initialState.osisTeam);
-  const [siteSettings, setSiteSettings] = useState<T.SiteSettings>(initialState.siteSettings);
-  const [siteContent, setSiteContent] = useState<T.SiteContent>(initialState.siteContent);
+  const [activeAdminSection, setActiveAdminSection] = useState<AdminSection>('dashboard');
   const [adminPassword, setAdminPassword] = useState(initialState.adminPassword);
 
-  // Toast State
-  const [toasts, setToasts] = useState<T.Toast[]>([]);
-  
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  // Persist state to localStorage
   useEffect(() => {
-    const dataToSave = {
-      heroData, announcements, events, articles, achievements, galleryImages,
-      testimonials, stats, osisTeam, siteSettings, siteContent, adminPassword
-    };
-    localStorage.setItem('osisCmsData', JSON.stringify(dataToSave));
+    try {
+      const stateToSave = {
+        announcements,
+        events,
+        articles,
+        achievements,
+        gallery,
+        testimonials,
+        osisTeam,
+        stats,
+        siteContent,
+        siteSettings,
+        saran,
+        adminPassword,
+      };
+      window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch (error) {
+      console.warn('Error writing to localStorage', error);
+    }
   }, [
-    heroData, announcements, events, articles, achievements, galleryImages,
-    testimonials, stats, osisTeam, siteSettings, siteContent, adminPassword
+    announcements, events, articles, achievements, gallery, testimonials,
+    osisTeam, stats, siteContent, siteSettings, saran, adminPassword
   ]);
 
-  const addToast = (message: string, type: T.Toast['type']) => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
-    }, 3000);
-  };
-
-  const login = (password: string): boolean => {
+  const login = (password: string) => {
     if (password === adminPassword) {
       setIsLoggedIn(true);
       setShowLogin(false);
-      setActiveAdminSection('dashboard');
       addToast('Login berhasil! Selamat datang, Admin.', 'success');
       return true;
-    } else {
-      return false; // The Login component will handle the error message UI
     }
+    return false;
   };
-
+  
   const logout = () => {
     setIsLoggedIn(false);
-    setShowLogin(false);
-    addToast('Anda telah logout.', 'info');
+    addToast('Anda telah berhasil logout.', 'info');
   };
 
-  const updatePassword = (oldPass: string, newPass: string) => {
-    if (oldPass === adminPassword) {
+  const updatePassword = (current: string, newPass: string) => {
+    if(current === adminPassword) {
         setAdminPassword(newPass);
-        addToast('Kata sandi berhasil diperbarui!', 'success');
+        addToast('Kata sandi berhasil diubah.', 'success');
         return true;
     }
-    addToast('Kata sandi lama salah!', 'error');
+    addToast('Kata sandi saat ini salah.', 'error');
     return false;
   }
+
+  const addToast = (message: string, type: Toast['type']) => {
+    const newToast: Toast = { id: Date.now(), message, type };
+    setToasts(prev => [...prev, newToast]);
+    setTimeout(() => {
+        setToasts(currentToasts => currentToasts.filter(t => t.id !== newToast.id));
+    }, 3000);
+  };
+
+  const addSaran = (newSaran: Omit<Saran, 'id' | 'createdAt'>) => {
+    const saranToAdd: Saran = {
+      ...newSaran,
+      id: Date.now(),
+      createdAt: new Date().toISOString()
+    };
+    setSaran(prev => [saranToAdd, ...prev]);
+    addToast('Saran Anda telah berhasil dikirim. Terima kasih!', 'success');
+  };
   
   const value = {
-    isLoggedIn,
-    login,
-    logout,
-    updatePassword,
-    showLogin,
-    setShowLogin,
-    heroData, setHeroData,
     announcements, setAnnouncements,
     events, setEvents,
     articles, setArticles,
     achievements, setAchievements,
-    galleryImages, setGalleryImages,
+    gallery, setGallery,
     testimonials, setTestimonials,
-    stats, setStats,
     osisTeam, setOsisTeam,
-    siteSettings, setSiteSettings,
+    stats, setStats,
     siteContent, setSiteContent,
+    siteSettings, setSiteSettings,
+    saran, setSaran,
+    addSaran,
+    isLoggedIn, login, logout,
+    showLogin, setShowLogin,
+    activeAdminSection, setActiveAdminSection,
+    updatePassword,
     toasts, addToast,
-    activeAdminSection, setActiveAdminSection
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 };
 
-export const useData = (): DataContextType => {
+export const useData = () => {
   const context = useContext(DataContext);
   if (context === undefined) {
     throw new Error('useData must be used within a DataProvider');

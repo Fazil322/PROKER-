@@ -1,5 +1,7 @@
+
 import React, { useState, FormEvent } from 'react';
-import { useData } from '../../context/DataContext';
+// FIX: Add .tsx extension to file import.
+import { useData } from '../../context/DataContext.tsx';
 
 const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-white p-6 rounded-lg shadow-md">

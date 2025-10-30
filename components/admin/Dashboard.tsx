@@ -1,5 +1,7 @@
+
 import React from 'react';
-import { useData } from '../../context/DataContext';
+// FIX: Add .tsx extension to file import.
+import { useData } from '../../context/DataContext.tsx';
 
 const StatCard: React.FC<{ label: string; value: number; icon: React.ReactNode }> = ({ label, value, icon }) => (
     <div className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">

@@ -1,91 +1,66 @@
+
 import React, { useState, useEffect } from 'react';
-import { useData } from '../context/DataContext';
+// FIX: Add .tsx extension to file import.
+import { useData } from '../context/DataContext.tsx';
 
 const Header: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { isLoggedIn, logout, setActiveAdminSection, siteContent } = useData();
+    const { siteContent, setShowLogin } = useData();
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
-  return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isLoggedIn ? 'bg-white shadow-md' : 'bg-transparent'}`}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <div className="flex-shrink-0">
-            <a href="#home" className="flex items-center space-x-2">
-              <span className={`font-bold text-xl ${isScrolled || isLoggedIn ? 'text-gray-800' : 'text-white'}`}>
-                {siteContent.siteName}
-              </span>
-            </a>
-          </div>
-          <nav className="hidden md:flex items-center space-x-8">
-            {siteContent.headerNavLinks.map((link) => (
-              <a key={link.id} href={link.href} className={`text-sm font-semibold transition-colors ${isScrolled || isLoggedIn ? 'text-gray-600 hover:text-brand-blue-700' : 'text-gray-200 hover:text-white'}`}>
-                {link.name}
-              </a>
-            ))}
-             {isLoggedIn && (
-                <div className="flex items-center space-x-4">
-                     <button onClick={() => setActiveAdminSection('dashboard')} className="bg-brand-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-brand-blue-700">
-                        Admin Panel
-                    </button>
-                    <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-red-600">
-                        Logout
-                    </button>
+    return (
+        <header id="home" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/80 dark:bg-gray-900/80 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-20">
+                    <div className="flex-shrink-0">
+                        <a href="#home" className="text-xl font-bold text-gray-900 dark:text-white">{siteContent.siteName}</a>
+                    </div>
+                    <nav className="hidden md:block">
+                        <ul className="flex items-center space-x-8">
+                            {siteContent.headerNavLinks.map(link => (
+                                <li key={link.id}>
+                                    <a href={link.href} className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-colors">{link.name}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                    <div className="flex items-center">
+                        <button onClick={() => setShowLogin(true)} className="hidden md:block bg-brand-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-blue-800 transition-colors">
+                            Admin Login
+                        </button>
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-gray-800 dark:text-white">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {/* Mobile Menu */}
+            {isMenuOpen && (
+                <div className="md:hidden bg-white dark:bg-gray-900 py-4">
+                     <ul className="flex flex-col items-center space-y-4">
+                        {siteContent.headerNavLinks.map(link => (
+                            <li key={link.id}>
+                                <a href={link.href} onClick={() => setIsMenuOpen(false)} className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-colors">{link.name}</a>
+                            </li>
+                        ))}
+                        <li>
+                            <button onClick={() => { setShowLogin(true); setIsMenuOpen(false); }} className="bg-brand-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-blue-800 transition-colors">
+                                Admin Login
+                            </button>
+                        </li>
+                    </ul>
                 </div>
             )}
-          </nav>
-          <div className="md:hidden flex items-center">
-             {isLoggedIn && (
-                 <button onClick={logout} className={`p-2 rounded-md mr-2 ${isScrolled || isLoggedIn ? 'text-red-500' : 'text-white'}`}>
-                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0-0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                 </button>
-            )}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className={`inline-flex items-center justify-center p-2 rounded-md ${isScrolled || isLoggedIn ? 'text-gray-600 hover:text-brand-blue-700' : 'text-gray-200 hover:text-white'} focus:outline-none`}
-              aria-label="Main menu"
-              aria-expanded="false"
-            >
-              <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                {isOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
-                )}
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white shadow-lg">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {siteContent.headerNavLinks.map((link) => (
-              <a key={link.id} href={link.href} className="text-gray-700 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium">
-                {link.name}
-              </a>
-            ))}
-             {isLoggedIn && (
-                <div className="border-t mt-2 pt-2">
-                    <button onClick={() => { setActiveAdminSection('dashboard'); setIsOpen(false); }} className="w-full text-left text-gray-700 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium">
-                        Admin Panel
-                    </button>
-                </div>
-            )}
-          </div>
-        </div>
-      )}
-    </header>
-  );
+        </header>
+    );
 };
 
 export default Header;

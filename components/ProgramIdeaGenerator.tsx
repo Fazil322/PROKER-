@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
-import { useData } from '../context/DataContext';
+// FIX: Add .tsx extension to file import.
+import { useData } from '../context/DataContext.tsx';
 
 interface Idea {
     name: string;
@@ -9,11 +11,11 @@ interface Idea {
 }
 
 const IdeaCard: React.FC<{ idea: Idea }> = ({ idea }) => (
-    <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-brand-yellow-400">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{idea.name}</h3>
-        <p className="text-gray-600 mb-4">{idea.description}</p>
-        <h4 className="font-semibold text-gray-800 mb-2">Contoh Kegiatan:</h4>
-        <ul className="list-disc list-inside text-gray-500 space-y-1">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-brand-yellow-400">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{idea.name}</h3>
+        <p className="text-gray-600 dark:text-gray-300 mb-4">{idea.description}</p>
+        <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Contoh Kegiatan:</h4>
+        <ul className="list-disc list-inside text-gray-500 dark:text-gray-400 space-y-1">
             {idea.activities.map((activity, index) => <li key={index}>{activity}</li>)}
         </ul>
     </div>
@@ -97,11 +99,11 @@ const ProgramIdeaGenerator: React.FC = () => {
     };
 
     return (
-        <section id="idea-generator" className="bg-brand-blue-50 py-16 sm:py-20">
+        <section id="idea-generator" className="bg-brand-blue-50 dark:bg-brand-blue-900/20 py-16 sm:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-12">
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{siteContent.ideaGeneratorTitle}</h2>
-                    <p className="mt-4 text-lg text-gray-600">
+                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">{siteContent.ideaGeneratorTitle}</h2>
+                    <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
                         {siteContent.ideaGeneratorDescription}
                     </p>
                 </div>
@@ -112,7 +114,7 @@ const ProgramIdeaGenerator: React.FC = () => {
                         value={topic}
                         onChange={(e) => setTopic(e.target.value)}
                         placeholder="e.g., Lingkungan, Teknologi, Amal"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                         disabled={isLoading}
                     />
                     <button
