@@ -44,11 +44,11 @@ const GalleryPreview: React.FC = () => {
           <p className="mt-4 text-lg text-gray-600">Momen-momen tak terlupakan yang terekam kamera.</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-          {galleryImages.map((src, index) => (
-            <div key={index} className="overflow-hidden rounded-lg aspect-w-1 aspect-h-1 cursor-pointer" onClick={() => setSelectedImage(src)}>
+          {galleryImages.map((image) => (
+            <div key={image.id} className="overflow-hidden rounded-lg aspect-w-1 aspect-h-1 cursor-pointer" onClick={() => setSelectedImage(image.src)}>
               <img
-                src={src}
-                alt={`Gallery image ${index + 1}`}
+                src={image.src}
+                alt={image.alt}
                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
               />
             </div>

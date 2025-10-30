@@ -13,8 +13,18 @@ const StatCard: React.FC<{ label: string; value: number; icon: React.ReactNode }
     </div>
 );
 
+const QuickActionButton: React.FC<{ label: string; onClick: () => void; }> = ({ label, onClick }) => (
+    <button
+        onClick={onClick}
+        className="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors flex items-center text-sm font-semibold text-gray-700"
+    >
+        <span className="mr-2 text-brand-blue-600">+</span> {label}
+    </button>
+);
+
+
 const Dashboard: React.FC = () => {
-    const { announcements, events, articles, achievements, testimonials } = useData();
+    const { announcements, events, articles, achievements, testimonials, setActiveAdminSection } = useData();
 
     const stats = [
         { label: 'Pengumuman', value: announcements.length, icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-2.236 9.168-5.5" /></svg> },
@@ -34,21 +44,33 @@ const Dashboard: React.FC = () => {
                 ))}
             </div>
 
-            <div className="mt-12 bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Aktivitas Terbaru</h2>
-                <div className="space-y-4">
-                    {announcements.slice(0, 2).map(item => (
-                        <div key={item.id} className="p-3 bg-gray-50 rounded-md">
-                            <p className="font-semibold text-gray-700">{item.title}</p>
-                            <span className="text-xs text-gray-500">Pengumuman baru ditambahkan pada {item.date}</span>
-                        </div>
-                    ))}
-                     {testimonials.slice(0, 1).map(item => (
-                        <div key={item.id} className="p-3 bg-gray-50 rounded-md">
-                            <p className="font-semibold text-gray-700">"{item.quote}"</p>
-                            <span className="text-xs text-gray-500">Testimoni baru dari {item.name}</span>
-                        </div>
-                    ))}
+            <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Aktivitas Terbaru</h2>
+                    <div className="space-y-4">
+                        {announcements.length > 0 ? announcements.slice(0, 2).map(item => (
+                            <div key={item.id} className="p-3 bg-gray-50 rounded-md">
+                                <p className="font-semibold text-gray-700">{item.title}</p>
+                                <span className="text-xs text-gray-500">Pengumuman baru ditambahkan pada {item.date}</span>
+                            </div>
+                        )) : <p className="text-sm text-gray-500">Belum ada pengumuman.</p>}
+                         {testimonials.length > 0 ? testimonials.slice(0, 1).map(item => (
+                            <div key={item.id} className="p-3 bg-gray-50 rounded-md">
+                                <p className="font-semibold text-gray-700">"{item.quote}"</p>
+                                <span className="text-xs text-gray-500">Testimoni baru dari {item.name}</span>
+                            </div>
+                        )) : <p className="text-sm text-gray-500">Belum ada testimoni.</p>}
+                    </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Aksi Cepat</h2>
+                    <div className="space-y-3">
+                        <QuickActionButton label="Tambah Pengumuman" onClick={() => setActiveAdminSection('announcements')} />
+                        <QuickActionButton label="Tambah Agenda Baru" onClick={() => setActiveAdminSection('events')} />
+                        <QuickActionButton label="Tambah Artikel" onClick={() => setActiveAdminSection('articles')} />
+                        <QuickActionButton label="Tambah Prestasi" onClick={() => setActiveAdminSection('achievements')} />
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import { NavLink, Announcement, Event, Article, Achievement, Testimonial, Stat, HeroData } from './types';
+import { Announcement, Event, Article, Achievement, Testimonial, Stat, HeroData, TeamMember, SiteSettings, SiteContent, GalleryImage } from './types';
 
 export const HERO_DATA: HeroData = {
   title: 'Membangun Generasi Emas',
@@ -7,14 +7,42 @@ export const HERO_DATA: HeroData = {
   cta2: 'Tentang Kami',
 };
 
-export const NAV_LINKS: NavLink[] = [
-  { name: 'Home', href: '#home' },
-  { name: 'Tentang OSIS', href: '#about' },
-  { name: 'Berita', href: '#articles' },
-  { name: 'Agenda', href: '#events' },
-  { name: 'Prestasi', href: '#achievements' },
-  { name: 'Galeri', href: '#gallery' },
-  { name: 'Kontak', href: '#contact' },
+export const SITE_CONTENT: SiteContent = {
+  siteName: "SMK LPPMRI 2 KEDUNGREJA",
+  heroBackgroundImage: "https://picsum.photos/seed/school/1920/1080",
+  headerNavLinks: [
+    { id: 1, name: 'Home', href: '#home' },
+    { id: 2, name: 'Tentang OSIS', href: '#about-osis' },
+    { id: 3, name: 'Berita', href: '#articles' },
+    { id: 4, name: 'Agenda', href: '#events' },
+    { id: 5, name: 'Generator Ide', href: '#idea-generator' },
+    { id: 6, name: 'Prestasi', href: '#achievements' },
+    { id: 7, name: 'Galeri', href: '#gallery' },
+    { id: 8, name: 'Kontak', href: '#contact' },
+  ],
+  aboutOsisTitle: "Tentang OSIS",
+  aboutOsisDescription: "Kami adalah perwakilan siswa yang berdedikasi untuk menciptakan lingkungan sekolah yang positif, inspiratif, dan penuh dengan kesempatan berkembang bagi semua siswa SMK LPPMRI 2 Kedungreja.",
+  ideaGeneratorTitle: "Butuh Ide Acara?",
+  ideaGeneratorDescription: "Gunakan kekuatan AI untuk mendapatkan inspirasi program kerja atau acara sekolah yang kreatif. Cukup masukkan tema, dan biarkan kami bantu!",
+  footerAboutText: "Platform digital untuk informasi, aspirasi, dan kolaborasi siswa. Membangun generasi yang aktif, kreatif, dan berprestasi.",
+  footerNavLinks: [
+    { id: 1, name: "Tentang Kami", href: "#about-osis" },
+    { id: 2, name: "Program & Divisi", href: "#events" },
+    { id: 3, name: "Database Prestasi", href: "#achievements" },
+    { id: 4, name: "Kotak Saran Digital", href: "#contact" },
+  ],
+  contactAddress: "Jl. Raya Kedungreja No.1, Kedungreja, Cilacap, Jawa Tengah 53263",
+  googleMapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.57685608684!2d108.8313360147764!3d-7.512015294580665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e656c1d1aaaaaab%3A0xe54e1b80c102a0a2!2sSMK%20LPPMRI%202%20KEDUNGREJA!5e0!3m2!1sen!2sid!4v1672580000000",
+  footerCopyrightText: "OSIS SMK LPPMRI 2 Kedungreja. All rights reserved.",
+  footerCreditText: "Didesain dan dikembangkan dengan ❤️ oleh Tim OSIS."
+};
+
+
+export const OSIS_TEAM: TeamMember[] = [
+  { id: 1, name: 'Adi Saputra', position: 'Ketua OSIS', image: 'https://picsum.photos/seed/ketua/500/500', quote: 'Memimpin dengan integritas untuk OSIS yang lebih baik.' },
+  { id: 2, name: 'Bella Candra', position: 'Wakil Ketua OSIS', image: 'https://picsum.photos/seed/wakil/500/500', quote: 'Kolaborasi adalah kunci kesuksesan setiap program kerja.' },
+  { id: 3, name: 'Rian Hidayat', position: 'Sekretaris', image: 'https://picsum.photos/seed/sekretaris/500/500', quote: 'Administrasi yang rapi adalah fondasi organisasi yang kuat.' },
+  { id: 4, name: 'Dina Lestari', position: 'Bendahara', image: 'https://picsum.photos/seed/bendahara/500/500', quote: 'Transparansi anggaran untuk kepercayaan anggota.' },
 ];
 
 export const ANNOUNCEMENTS: Announcement[] = [
@@ -24,9 +52,9 @@ export const ANNOUNCEMENTS: Announcement[] = [
 ];
 
 export const EVENTS: Event[] = [
-  { id: 1, title: 'Class Meeting: Turnamen Futsal Antar Jurusan', date: '2023-12-15T08:00:00', image: 'https://picsum.photos/seed/futsal/600/400', description: 'Tunjukkan kekompakan jurusanmu di lapangan!' },
-  { id: 2, title: 'Pentas Seni & Bazar Kewirausahaan Akhir Tahun', date: '2023-12-22T10:00:00', image: 'https://picsum.photos/seed/pensi/600/400', description: 'Saksikan kreativitas siswa dan nikmati kuliner lezat.' },
-  { id: 3, title: 'LDKS (Latihan Dasar Kepemimpinan Siswa) 2024', date: '2024-01-10T07:00:00', image: 'https://picsum.photos/seed/ldks/600/400', description: 'Membentuk jiwa pemimpin yang tangguh dan berkarakter.' },
+  { id: 1, title: 'Class Meeting: Turnamen Futsal Antar Jurusan', date: '2023-12-15T08:00', image: 'https://picsum.photos/seed/futsal/600/400', description: 'Tunjukkan kekompakan jurusanmu di lapangan!' },
+  { id: 2, title: 'Pentas Seni & Bazar Kewirausahaan Akhir Tahun', date: '2023-12-22T10:00', image: 'https://picsum.photos/seed/pensi/600/400', description: 'Saksikan kreativitas siswa dan nikmati kuliner lezat.' },
+  { id: 3, title: 'LDKS (Latihan Dasar Kepemimpinan Siswa) 2024', date: '2024-01-10T07:00', image: 'https://picsum.photos/seed/ldks/600/400', description: 'Membentuk jiwa pemimpin yang tangguh dan berkarakter.' },
 ];
 
 export const ARTICLES: Article[] = [
@@ -41,13 +69,13 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 3, student: 'Tim Basket Putra', competition: 'Juara 1 DBL Series', level: 'Regional', image: 'https://picsum.photos/seed/basket/500/500' },
 ];
 
-export const GALLERY_IMAGES: string[] = [
-  'https://picsum.photos/seed/gallery1/600/600',
-  'https://picsum.photos/seed/gallery2/600/600',
-  'https://picsum.photos/seed/gallery3/600/600',
-  'https://picsum.photos/seed/gallery4/600/600',
-  'https://picsum.photos/seed/gallery5/600/600',
-  'https://picsum.photos/seed/gallery6/600/600',
+export const GALLERY_IMAGES: GalleryImage[] = [
+  { id: 1, src: 'https://picsum.photos/seed/gallery1/600/600', alt: 'Kegiatan 1' },
+  { id: 2, src: 'https://picsum.photos/seed/gallery2/600/600', alt: 'Kegiatan 2' },
+  { id: 3, src: 'https://picsum.photos/seed/gallery3/600/600', alt: 'Kegiatan 3' },
+  { id: 4, src: 'https://picsum.photos/seed/gallery4/600/600', alt: 'Kegiatan 4' },
+  { id: 5, src: 'https://picsum.photos/seed/gallery5/600/600', alt: 'Kegiatan 5' },
+  { id: 6, src: 'https://picsum.photos/seed/gallery6/600/600', alt: 'Kegiatan 6' },
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -62,3 +90,10 @@ export const STATS: Stat[] = [
     { id: 3, label: 'Ekstrakurikuler', value: 15 },
     { id: 4, label: 'Prestasi 2023', value: 42, suffix: '+' }
 ];
+
+export const SITE_SETTINGS: SiteSettings = {
+  instagramUrl: 'https://instagram.com',
+  facebookUrl: 'https://facebook.com',
+  youtubeUrl: 'https://youtube.com',
+  contactEmail: 'osis@smklppri2.sch.id'
+};

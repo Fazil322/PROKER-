@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { NAV_LINKS } from '../constants';
 import { useData } from '../context/DataContext';
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isLoggedIn, logout, setActiveAdminSection } = useData();
+  const { isLoggedIn, logout, setActiveAdminSection, siteContent } = useData();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,13 +21,13 @@ const Header: React.FC = () => {
           <div className="flex-shrink-0">
             <a href="#home" className="flex items-center space-x-2">
               <span className={`font-bold text-xl ${isScrolled || isLoggedIn ? 'text-gray-800' : 'text-white'}`}>
-                SMK LPPMRI 2 KEDUNGREJA
+                {siteContent.siteName}
               </span>
             </a>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
-            {NAV_LINKS.map((link) => (
-              <a key={link.name} href={link.href} className={`text-sm font-semibold transition-colors ${isScrolled || isLoggedIn ? 'text-gray-600 hover:text-brand-blue-700' : 'text-gray-200 hover:text-white'}`}>
+            {siteContent.headerNavLinks.map((link) => (
+              <a key={link.id} href={link.href} className={`text-sm font-semibold transition-colors ${isScrolled || isLoggedIn ? 'text-gray-600 hover:text-brand-blue-700' : 'text-gray-200 hover:text-white'}`}>
                 {link.name}
               </a>
             ))}
@@ -70,8 +69,8 @@ const Header: React.FC = () => {
       {isOpen && (
         <div className="md:hidden bg-white shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {NAV_LINKS.map((link) => (
-              <a key={link.name} href={link.href} className="text-gray-700 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium">
+            {siteContent.headerNavLinks.map((link) => (
+              <a key={link.id} href={link.href} className="text-gray-700 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium">
                 {link.name}
               </a>
             ))}

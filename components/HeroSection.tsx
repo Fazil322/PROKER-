@@ -2,13 +2,13 @@ import React from 'react';
 import { useData } from '../context/DataContext';
 
 const HeroSection: React.FC = () => {
-  const { heroData } = useData();
+  const { heroData, siteContent } = useData();
 
   return (
     <section id="home" className="relative h-screen flex items-center justify-center text-center text-white">
       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 z-10"></div>
       <img
-        src="https://picsum.photos/seed/school/1920/1080"
+        src={siteContent.heroBackgroundImage}
         alt="Kegiatan Siswa"
         className="absolute top-0 left-0 w-full h-full object-cover"
       />
@@ -27,12 +27,17 @@ const HeroSection: React.FC = () => {
             {heroData.cta1}
           </a>
           <a
-            href="#about"
+            href="#about-osis"
             className="w-full sm:w-auto bg-white/20 backdrop-blur-sm border border-white/50 hover:bg-white/30 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300"
           >
             {heroData.cta2}
           </a>
         </div>
+      </div>
+       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
+        <a href="#about-osis" aria-label="Scroll down">
+            <svg className="w-8 h-8 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </a>
       </div>
     </section>
   );

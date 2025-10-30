@@ -1,5 +1,5 @@
-
 export interface NavLink {
+  id: number;
   name: string;
   href: string;
 }
@@ -63,4 +63,41 @@ export interface Toast {
     type: 'success' | 'error' | 'info';
 }
 
-export type AdminSection = 'dashboard' | 'hero' | 'announcements' | 'events' | 'articles' | 'achievements' | 'gallery' | 'testimonials' | 'stats';
+export interface TeamMember {
+  id: number;
+  name: string;
+  position: string;
+  image: string;
+  quote: string;
+}
+
+export interface SiteSettings {
+  instagramUrl: string;
+  facebookUrl: string;
+  youtubeUrl: string;
+  contactEmail: string;
+}
+
+export interface SiteContent {
+  siteName: string;
+  heroBackgroundImage: string;
+  headerNavLinks: NavLink[];
+  aboutOsisTitle: string;
+  aboutOsisDescription: string;
+  ideaGeneratorTitle: string;
+  ideaGeneratorDescription: string;
+  footerAboutText: string;
+  footerNavLinks: NavLink[];
+  contactAddress: string;
+  googleMapsUrl: string;
+  footerCopyrightText: string;
+  footerCreditText: string;
+}
+
+export interface GalleryImage {
+  id: number;
+  src: string;
+  alt: string;
+}
+
+export type AdminSection = 'dashboard' | 'hero' | 'announcements' | 'events' | 'articles' | 'achievements' | 'gallery' | 'testimonials' | 'stats' | 'about-osis' | 'settings' | 'content-appearance';

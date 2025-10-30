@@ -14,6 +14,8 @@ import { useData } from './context/DataContext';
 import ToastContainer from './components/ui/ToastContainer';
 import Login from './components/Login';
 import AdminControl from './components/ui/AdminControl';
+import AboutOsis from './components/AboutOsis';
+import ProgramIdeaGenerator from './components/ProgramIdeaGenerator';
 
 const PublicSite: React.FC = () => (
   <div className="bg-gray-50 text-gray-800 font-sans">
@@ -21,6 +23,9 @@ const PublicSite: React.FC = () => (
     <main>
       <AdminControl section="hero">
         <HeroSection />
+      </AdminControl>
+      <AdminControl section="about-osis">
+        <AboutOsis />
       </AdminControl>
       <AdminControl section="announcements">
         <Announcements />
@@ -40,6 +45,7 @@ const PublicSite: React.FC = () => (
       <AdminControl section="gallery">
         <GalleryPreview />
       </AdminControl>
+      <ProgramIdeaGenerator />
       <AdminControl section="testimonials">
         <Testimonials />
       </AdminControl>

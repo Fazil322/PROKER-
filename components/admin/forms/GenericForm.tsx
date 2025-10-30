@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 export interface Field {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'url';
+  type: 'text' | 'textarea' | 'number' | 'url' | 'datetime-local';
   required?: boolean;
 }
 
@@ -18,7 +18,7 @@ const InputField: React.FC<{ field: Field; value: any; onChange: (e: React.Chang
     const commonProps = {
         id: field.name,
         name: field.name,
-        value: value,
+        value: value || '',
         onChange: onChange,
         required: field.required,
         className: "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm",
@@ -27,7 +27,7 @@ const InputField: React.FC<{ field: Field; value: any; onChange: (e: React.Chang
     if (field.type === 'textarea') {
         return <textarea {...commonProps} rows={4} />;
     }
-    return <input type={field.type === 'url' ? 'url' : field.type} {...commonProps} />;
+    return <input type={field.type} {...commonProps} />;
 };
 
 
@@ -41,11 +41,12 @@ const GenericForm: React.FC<GenericFormProps> = ({ fields, initialData, onSubmit
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    const isNumber = fields.find(f => f.name === name)?.type === 'number';
+    const { name, value } = e.target;
+    const fieldType = fields.find(f => f.name === name)?.type;
+
     setFormData(prev => ({
       ...prev,
-      [name]: isNumber && value !== '' ? Number(value) : value,
+      [name]: fieldType === 'number' && value !== '' ? Number(value) : value,
     }));
   };
 
