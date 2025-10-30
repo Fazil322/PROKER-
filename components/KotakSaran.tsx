@@ -9,18 +9,27 @@ const KotakSaran: React.FC = () => {
     const [className, setClassName] = useState('');
     const [suggestion, setSuggestion] = useState('');
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!suggestion.trim()) {
             setError('Kolom saran/masukan wajib diisi.');
             return;
         }
         setError('');
-        addSaran({ name: name || "Anonim", class: className || "N/A", suggestion });
-        setName('');
-        setClassName('');
-        setSuggestion('');
+        setIsSubmitting(true);
+        try {
+            await addSaran({ name: name || "Anonim", class: className || "N/A", suggestion });
+            setName('');
+            setClassName('');
+            setSuggestion('');
+        } catch (error) {
+            // Error toast is handled by the context
+            console.error("Failed to submit suggestion:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -48,8 +57,8 @@ const KotakSaran: React.FC = () => {
                         </div>
                         {error && <p className="text-red-500 text-sm">{error}</p>}
                         <div className="text-right">
-                             <button type="submit" className="bg-brand-blue-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-brand-blue-800 transition-colors">
-                                Kirim
+                             <button type="submit" disabled={isSubmitting} className="bg-brand-blue-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-brand-blue-800 transition-colors disabled:bg-brand-blue-400">
+                                {isSubmitting ? 'Mengirim...' : 'Kirim'}
                             </button>
                         </div>
                     </form>

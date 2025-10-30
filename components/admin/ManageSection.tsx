@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 // FIX: Add .tsx extension to file import.
-import { useData } from '../../context/DataContext.tsx';
+import { useData, TableName } from '../../context/DataContext.tsx';
 // FIX: Add .ts extension to file import.
 import { AdminSection } from '../../types.ts';
 // FIX: Add .tsx extension to file import.
@@ -11,10 +11,7 @@ import ConfirmModal from '../ui/ConfirmModal.tsx';
 // FIX: Add .tsx extension to file import.
 import Modal from '../ui/Modal.tsx';
 
-// A helper type to strongly type the dataKey
-type DataKey = keyof Omit<ReturnType<typeof useData>, 'isLoggedIn' | 'login' | 'logout' | 'showLogin' | 'setShowLogin' | 'activeAdminSection' | 'setActiveAdminSection' | 'updatePassword' | 'toasts' | 'addToast' | 'setSaran' | 'addSaran' | 'siteContent' | 'setSiteContent' | 'siteSettings' | 'setSiteSettings' | 'saran'>
-
-const sectionConfig: Record<string, { title: string; fields: Field[]; dataKey: DataKey }> = {
+const sectionConfig: Record<string, { title: string; fields: Field[]; dataKey: TableName | 'saran' }> = {
     announcements: {
         title: 'Pengumuman',
         dataKey: 'announcements',
@@ -95,7 +92,7 @@ const sectionConfig: Record<string, { title: string; fields: Field[]; dataKey: D
     },
      saran: {
         title: 'Kotak Saran',
-        dataKey: 'saran' as any, // Not a standard DataKey, special handling
+        dataKey: 'saran',
         fields: [] // Readonly
     }
 };
@@ -104,9 +101,8 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
     const config = sectionConfig[section];
     if (!config) return <div>Konfigurasi untuk seksi '{section}' tidak ditemukan.</div>;
 
-    const dataContext = useData();
+    const { addItem, updateItem, deleteItem, addToast, ...dataContext } = useData();
     const items = (dataContext as any)[config.dataKey] as any[];
-    const setItems = (dataContext as any)[`set${config.dataKey.charAt(0).toUpperCase() + config.dataKey.slice(1)}`];
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any | null>(null);
@@ -122,21 +118,30 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
         setEditingItem(null);
     };
 
-    const handleSubmit = (formData: any) => {
-        if (editingItem) { // Update
-            setItems(items.map(item => item.id === editingItem.id ? { ...item, ...formData } : item));
-            dataContext.addToast(`${config.title} berhasil diperbarui!`, 'success');
-        } else { // Create
-            setItems([{ id: Date.now(), ...formData }, ...items]);
-            dataContext.addToast(`${config.title} baru berhasil ditambahkan!`, 'success');
+    const handleSubmit = async (formData: any) => {
+        try {
+            if (editingItem) { // Update
+                await updateItem(config.dataKey as TableName, editingItem.id, formData);
+                addToast(`${config.title} berhasil diperbarui!`, 'success');
+            } else { // Create
+                await addItem(config.dataKey as TableName, formData);
+                addToast(`${config.title} baru berhasil ditambahkan!`, 'success');
+            }
+            handleCloseModal();
+        } catch (error) {
+            console.error("Submit failed:", error);
+            // Error toast is already handled in context
         }
-        handleCloseModal();
     };
 
-    const handleDelete = (id: number) => {
-        setItems(items.filter(item => item.id !== id));
-        dataContext.addToast(`${config.title} berhasil dihapus!`, 'success');
-        setDeletingItemId(null);
+    const handleDelete = async (id: number) => {
+        try {
+            await deleteItem(config.dataKey as TableName, id);
+            addToast(`${config.title} berhasil dihapus!`, 'success');
+            setDeletingItemId(null);
+        } catch (error) {
+            console.error("Delete failed:", error);
+        }
     };
     
     if (section === 'saran') {
@@ -150,7 +155,7 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
                 {saranItems.map(item => (
                   <li key={item.id} className="border p-4 rounded-md bg-gray-50">
                     <p className="font-semibold">{item.suggestion}</p>
-                    <p className="text-sm text-gray-500 mt-2">Dari: {item.name} ({item.class}) pada {new Date(item.createdAt).toLocaleString('id-ID')}</p>
+                    <p className="text-sm text-gray-500 mt-2">Dari: {item.name} ({item.class}) pada {new Date(item.created_at).toLocaleString('id-ID')}</p>
                     <button onClick={() => setDeletingItemId(item.id)} className="text-red-500 text-xs mt-2 hover:underline">Hapus</button>
                   </li>
                 ))}

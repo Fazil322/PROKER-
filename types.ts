@@ -116,5 +116,5 @@ export interface Saran {
   name: string;
   class: string;
   suggestion: string;
-  createdAt: string;
+  created_at: string;
 }

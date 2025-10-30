@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 // FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
@@ -29,7 +28,7 @@ const GalleryPreview: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {gallery.map((image, index) => (
-                        <div key={image.id} className={`overflow-hidden rounded-lg ${index === 0 ? 'col-span-2 row-span-2' : ''}`}>
+                        <div key={image.id} className={`overflow-hidden rounded-lg ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}>
                             <img
                                 src={image.src}
                                 alt={image.alt}
