@@ -1,33 +1,18 @@
 import React from 'react';
-// FIX: Add .tsx extension to file import.
 import Header from '../components/Header.tsx';
-// FIX: Add .tsx extension to file import.
 import HeroSection from '../components/HeroSection.tsx';
-// FIX: Add .tsx extension to file import.
 import Announcements from '../components/Announcements.tsx';
-// FIX: Add .tsx extension to file import.
 import UpcomingEvents from '../components/UpcomingEvents.tsx';
-// FIX: Add .tsx extension to file import.
 import LatestNews from '../components/LatestNews.tsx';
-// FIX: Add .tsx extension to file import.
 import Achievements from '../components/Achievements.tsx';
-// FIX: Add .tsx extension to file import.
 import GalleryPreview from '../components/GalleryPreview.tsx';
-// FIX: Add .tsx extension to file import.
 import StatsCounter from '../components/StatsCounter.tsx';
-// FIX: Add .tsx extension to file import.
 import Testimonials from '../components/Testimonials.tsx';
-// FIX: Add .tsx extension to file import.
 import Footer from '../components/Footer.tsx';
-// FIX: Add .tsx extension to file import.
 import AboutOsis from '../components/AboutOsis.tsx';
-// FIX: Add .tsx extension to file import.
 import ProgramIdeaGenerator from '../components/ProgramIdeaGenerator.tsx';
-// FIX: Add .tsx extension to file import.
 import KotakSaran from '../components/KotakSaran.tsx';
-// FIX: Add .tsx extension to file import.
 import AdminControl from '../components/ui/AdminControl.tsx';
-// FIX: Add .tsx extension to file import.
 import AnimatedSection from '../components/ui/AnimatedSection.tsx';
 
 const HomePage: React.FC = () => {

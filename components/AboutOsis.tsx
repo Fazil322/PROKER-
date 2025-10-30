@@ -1,8 +1,7 @@
 
+
 import React from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
-// FIX: Add .ts extension to file import.
 import type { TeamMember } from '../types.ts';
 
 const TeamMemberCard: React.FC<{ member: TeamMember }> = ({ member }) => (

@@ -1,7 +1,7 @@
 
+
 import React, { useState } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
-// FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
 
 interface Idea {

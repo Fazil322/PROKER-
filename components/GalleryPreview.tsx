@@ -1,7 +1,6 @@
+
 import React, { useState } from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
-// FIX: Add .tsx extension to file import.
 import Modal from './ui/Modal.tsx';
 
 const GalleryPreview: React.FC = () => {

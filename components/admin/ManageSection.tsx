@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData, TableName } from '../../context/DataContext.tsx';
-// FIX: Add .ts extension to file import.
 import { AdminSection } from '../../types.ts';
-// FIX: Add .tsx extension to file import.
 import GenericForm, { Field } from './forms/GenericForm.tsx';
-// FIX: Add .tsx extension to file import.
 import ConfirmModal from '../ui/ConfirmModal.tsx';
-// FIX: Add .tsx extension to file import.
 import Modal from '../ui/Modal.tsx';
 
 const sectionConfig: Record<string, { title: string; fields: Field[]; dataKey: TableName | 'saran' }> = {

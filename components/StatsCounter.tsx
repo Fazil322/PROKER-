@@ -1,6 +1,6 @@
 
+
 import React, { useState, useEffect, useRef } from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
 
 const CountUp: React.FC<{ end: number, duration?: number, suffix?: string }> = ({ end, duration = 2000, suffix = '' }) => {

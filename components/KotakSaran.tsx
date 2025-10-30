@@ -1,6 +1,6 @@
 
+
 import React, { useState } from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
 
 const KotakSaran: React.FC = () => {

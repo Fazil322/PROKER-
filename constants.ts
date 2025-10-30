@@ -9,7 +9,6 @@ import {
   Testimonial,
   TeamMember,
   Stat,
-// FIX: Add .ts extension to file import.
 } from './types.ts';
 
 // Default site content and settings.

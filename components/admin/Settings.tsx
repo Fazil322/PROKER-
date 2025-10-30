@@ -1,6 +1,6 @@
 
+
 import React, { useState, FormEvent } from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../../context/DataContext.tsx';
 
 const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (

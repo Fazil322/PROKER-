@@ -1,5 +1,5 @@
+
 import React from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
 
 const HeroSection: React.FC = () => {

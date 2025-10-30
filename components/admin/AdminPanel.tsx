@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../../context/DataContext.tsx';
-// FIX: Add .tsx extension to file import.
 import Dashboard from './Dashboard.tsx';
-// FIX: Add .tsx extension to file import.
 import ManageSection from './ManageSection.tsx';
-// FIX: Add .tsx extension to file import.
 import Settings from './Settings.tsx';
-// FIX: Add .tsx extension to file import.
 import ContentAppearance from './ContentAppearance.tsx';
-// FIX: Add .ts extension to file import.
 import { AdminSection } from '../../types.ts';
 
 const sectionMap: Record<string, React.FC | null> = {

@@ -1,6 +1,6 @@
 
+
 import React, { useState, useEffect } from 'react';
-// FIX: Add .ts extension to file import.
 import { Toast as ToastType } from '../../types.ts';
 
 const toastConfig = {

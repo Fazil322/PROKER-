@@ -1,10 +1,8 @@
 
+
 import React from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../../context/DataContext.tsx';
-// FIX: Add .tsx extension to file import.
 import AdminEditButton from './AdminEditButton.tsx';
-// FIX: Add .ts extension to file import.
 import { AdminSection } from '../../types.ts';
 
 const AdminControl: React.FC<{ section: string; children: React.ReactNode }> = ({ section, children }) => {

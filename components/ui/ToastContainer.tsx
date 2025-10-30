@@ -1,8 +1,7 @@
 
+
 import React from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../../context/DataContext.tsx';
-// FIX: Add .tsx extension to file import.
 import Toast from './Toast.tsx';
 
 const ToastContainer: React.FC = () => {

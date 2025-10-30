@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
-// FIX: Add .ts extension to file import.
 import { Article } from '../types.ts';
-// FIX: Add .tsx extension to file import.
 import Modal from './ui/Modal.tsx';
 
 const NewsCard: React.FC<{ article: Article; onClick: () => void }> = ({ article, onClick }) => (

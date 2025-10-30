@@ -1,8 +1,7 @@
 
+
 import React, { useState, useRef, FormEvent } from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../../context/DataContext.tsx';
-// FIX: Add .ts extension to file import.
 import { NavLink } from '../../types.ts';
 
 const Card: React.FC<{ title: string; children: React.ReactNode; }> = ({ title, children }) => (

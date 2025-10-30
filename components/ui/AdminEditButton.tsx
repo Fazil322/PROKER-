@@ -1,8 +1,7 @@
 
+
 import React from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../../context/DataContext.tsx';
-// FIX: Add .ts extension to file import.
 import { AdminSection } from '../../types.ts';
 
 interface Props {

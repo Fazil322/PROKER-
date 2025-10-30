@@ -1,6 +1,6 @@
 
+
 import React, { useState, FormEvent, useEffect } from 'react';
-// FIX: Add .tsx extension to file import.
 import { useData } from '../context/DataContext.tsx';
 
 const Login: React.FC = () => {
