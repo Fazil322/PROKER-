@@ -15,6 +15,8 @@ import {
 // This data will be used on first load and can be updated from the admin panel.
 
 export const INITIAL_SITE_CONTENT: SiteContent = {
+  // FIX: Add id to conform to the updated SiteContent type.
+  id: 1,
   siteName: 'OSIS SMK LPPMRI 2 KDR',
   heroBackgroundImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
   headerNavLinks: [
@@ -42,6 +44,8 @@ export const INITIAL_SITE_CONTENT: SiteContent = {
 };
 
 export const INITIAL_SITE_SETTINGS: SiteSettings = {
+    // FIX: Add id to conform to the updated SiteSettings type.
+    id: 1,
     contactEmail: 'osis@smklppmri2kdr.sch.id',
     instagramUrl: 'https://instagram.com',
     facebookUrl: 'https://facebook.com',

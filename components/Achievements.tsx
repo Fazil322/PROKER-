@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { useData } from '../context/DataContext.tsx';
 
@@ -23,11 +21,11 @@ const Achievements: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {achievements.map((ach) => (
-            <div key={ach.id} className="text-center">
-              <img src={ach.image} alt={ach.student} className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-brand-yellow-400 object-cover" />
+            <div key={ach.id} className="bg-white/5 rounded-lg p-6 text-center group transition-all duration-300 hover:bg-white/10 hover:shadow-2xl hover:shadow-brand-yellow-400/20 hover:-translate-y-2">
+              <img src={ach.image} alt={ach.student} className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-brand-yellow-400 object-cover transition-transform duration-300 group-hover:scale-105" />
               <h3 className="text-xl font-semibold text-white">{ach.student}</h3>
-              <p className="text-brand-yellow-400 font-medium">{ach.competition}</p>
-              <span className="inline-block bg-white/10 text-white text-xs font-semibold mt-2 px-2.5 py-0.5 rounded-full">{ach.level}</span>
+              <p className="text-brand-yellow-400 font-medium mt-1">{ach.competition}</p>
+              <span className="inline-block bg-brand-yellow-400/10 text-brand-yellow-300 text-xs font-semibold mt-3 px-2.5 py-0.5 rounded-full">{ach.level}</span>
             </div>
           ))}
         </div>

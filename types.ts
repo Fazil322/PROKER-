@@ -5,6 +5,8 @@ export interface NavLink {
 }
 
 export interface SiteContent {
+  // FIX: Add id property to match database schema and fix type errors.
+  id: number;
   siteName: string;
   heroBackgroundImage: string;
   headerNavLinks: NavLink[];
@@ -21,6 +23,8 @@ export interface SiteContent {
 }
 
 export interface SiteSettings {
+  // FIX: Add id property to match database schema and fix type errors.
+  id: number;
   contactEmail: string;
   instagramUrl: string;
   facebookUrl: string;

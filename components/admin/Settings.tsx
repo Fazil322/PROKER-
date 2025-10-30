@@ -11,7 +11,7 @@ const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, c
 );
 
 const Settings: React.FC = () => {
-    const { siteSettings, setSiteSettings, updatePassword, addToast } = useData();
+    const { siteSettings, updateSiteSettings, updatePassword, addToast } = useData();
 
     const [passwordData, setPasswordData] = useState({
         currentPassword: '',
@@ -47,10 +47,15 @@ const Settings: React.FC = () => {
         }
     };
 
-    const handleSiteDataSubmit = (e: FormEvent) => {
+    const handleSiteDataSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        setSiteSettings(siteData);
-        addToast('Pengaturan situs berhasil disimpan!', 'success');
+        try {
+            await updateSiteSettings(siteData);
+            addToast('Pengaturan situs berhasil disimpan!', 'success');
+        } catch (error) {
+            // Error toast already handled by context
+            console.error("Failed to save site settings:", error);
+        }
     };
 
     return (

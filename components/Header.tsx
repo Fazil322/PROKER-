@@ -63,9 +63,6 @@ const Header: React.FC = () => {
                         <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300 hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-colors p-2 rounded-full">
                             {theme === 'light' ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
                         </button>
-                        <button onClick={() => setShowLogin(true)} className="hidden md:block bg-brand-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-blue-800 transition-colors">
-                            Admin Login
-                        </button>
                         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-gray-800 dark:text-white">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}></path></svg>
                         </button>
@@ -81,11 +78,6 @@ const Header: React.FC = () => {
                                 <a href={link.href} onClick={() => setIsMenuOpen(false)} className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-colors">{link.name}</a>
                             </li>
                         ))}
-                        <li>
-                            <button onClick={() => { setShowLogin(true); setIsMenuOpen(false); }} className="bg-brand-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-blue-800 transition-colors">
-                                Admin Login
-                            </button>
-                        </li>
                     </ul>
                 </div>
             )}

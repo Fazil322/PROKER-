@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { useData } from '../context/DataContext.tsx';
 
 const InstagramIcon: React.FC = () => (
     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path fillRule="evenodd" d="M12.315 2.315a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM12 6a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0112 6zm0 3a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0112 9zm0 3a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0112 12zm0 3a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM12 18a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM8.625 2.315a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM8.625 6a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM8.625 9a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM8.625 12a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM8.625 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM8.625 18a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM15.375 2.315a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM15.375 6a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM15.375 9a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM15.375 12a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM15.375 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM15.375 18a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.012 3.584-.07 4.85c-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.664-4.771 4.919-4.919C8.355 2.175 8.741 2.163 12 2.163m0-2.163C8.74.001 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.26 0 12 0zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zM12 16c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z"/>
     </svg>
 );
 const FacebookIcon: React.FC = () => (
@@ -19,13 +20,37 @@ const YouTubeIcon: React.FC = () => (
 
 
 const Footer: React.FC = () => {
-    const { siteContent, siteSettings } = useData();
+    const { siteContent, siteSettings, setShowLogin } = useData();
 
     const socialLinks = [
         { href: siteSettings.instagramUrl, label: 'Instagram', icon: <InstagramIcon /> },
         { href: siteSettings.facebookUrl, label: 'Facebook', icon: <FacebookIcon /> },
         { href: siteSettings.youtubeUrl, label: 'YouTube', icon: <YouTubeIcon /> },
     ];
+
+    const copyrightText = siteContent.footerCopyrightText;
+    const yearMatch = copyrightText.match(/\b\d{4}\b/);
+
+    let copyrightElement;
+    if (yearMatch) {
+        const year = yearMatch[0];
+        const parts = copyrightText.split(year);
+        copyrightElement = (
+            <p>
+                {parts[0]}
+                <span
+                    onClick={() => setShowLogin(true)}
+                    className="cursor-pointer font-semibold hover:text-brand-yellow-400 transition-colors"
+                    title="Akses Panel Admin"
+                >
+                    {year}
+                </span>
+                {parts[1]}
+            </p>
+        );
+    } else {
+        copyrightElement = <p>{copyrightText}</p>;
+    }
 
     return (
         <footer id="footer" className="bg-brand-blue-950 text-white">
@@ -65,7 +90,7 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
                 <div className="mt-12 text-center text-xs text-brand-blue-300">
-                    <p>{siteContent.footerCopyrightText}</p>
+                    {copyrightElement}
                     <p>{siteContent.footerCreditText}</p>
                 </div>
             </div>

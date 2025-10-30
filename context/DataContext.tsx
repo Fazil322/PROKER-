@@ -19,7 +19,14 @@ import {
 const AUTH_STORAGE_KEY = 'osis-website-auth';
 
 // Helper type for table names
-export type TableName = 'announcements' | 'events' | 'articles' | 'achievements' | 'gallery' | 'testimonials' | 'osisTeam' | 'stats' | 'saran';
+export type TableName = 'announcements' | 'events' | 'articles' | 'achievements' | 'gallery' | 'testimonials' | 'osisTeam' | 'stats' | 'saran' | 'siteContent' | 'siteSettings';
+
+const tableSortConfig: Record<string, { column: string; ascending: boolean }> = {
+    events: { column: 'date', ascending: true },
+    osisTeam: { column: 'id', ascending: true },
+    stats: { column: 'id', ascending: true },
+    saran: { column: 'created_at', ascending: false },
+};
 
 interface DataContextType {
   // Data states
@@ -43,8 +50,8 @@ interface DataContextType {
   addItem: (tableName: TableName, item: Omit<any, 'id' | 'created_at'>) => Promise<void>;
   updateItem: (tableName: TableName, id: number, item: Omit<any, 'id' | 'created_at'>) => Promise<void>;
   deleteItem: (tableName: TableName, id: number) => Promise<void>;
-  setSiteContent: React.Dispatch<React.SetStateAction<SiteContent>>;
-  setSiteSettings: React.Dispatch<React.SetStateAction<SiteSettings>>;
+  updateSiteContent: (newContent: SiteContent) => Promise<void>;
+  updateSiteSettings: (newSettings: SiteSettings) => Promise<void>;
   addSaran: (newSaran: Omit<Saran, 'id' | 'created_at'>) => Promise<void>;
 
   // Admin state
@@ -83,8 +90,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [testimonials, setTestimonials] = useState<Testimonial[]>(INITIAL_TESTIMONIALS);
   const [osisTeam, setOsisTeam] = useState<TeamMember[]>(INITIAL_OSIS_TEAM);
   const [stats, setStats] = useState<Stat[]>(INITIAL_STATS);
-  const [siteContent, setSiteContent] = useState<SiteContent>(INITIAL_SITE_CONTENT);
-  const [siteSettings, setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
+  const [siteContent, _setSiteContent] = useState<SiteContent>(INITIAL_SITE_CONTENT);
+  const [siteSettings, _setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
   const [saran, setSaran] = useState<Saran[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -113,14 +120,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           testimonialsRes, osisTeamRes, statsRes, saranRes, siteContentRes, siteSettingsRes
         ] = await Promise.all([
           supabase.from('announcements').select('*').order('id', { ascending: false }),
-          supabase.from('events').select('*').order('date', { ascending: true }),
+          supabase.from('events').select('*').order(tableSortConfig.events.column, { ascending: tableSortConfig.events.ascending }),
           supabase.from('articles').select('*').order('id', { ascending: false }),
           supabase.from('achievements').select('*').order('id', { ascending: false }),
           supabase.from('gallery').select('*').order('id', { ascending: false }),
           supabase.from('testimonials').select('*').order('id', { ascending: false }),
-          supabase.from('osisTeam').select('*').order('id', { ascending: true }),
-          supabase.from('stats').select('*').order('id', { ascending: true }),
-          supabase.from('saran').select('*').order('created_at', { ascending: false }),
+          supabase.from('osisTeam').select('*').order(tableSortConfig.osisTeam.column, { ascending: tableSortConfig.osisTeam.ascending }),
+          supabase.from('stats').select('*').order(tableSortConfig.stats.column, { ascending: tableSortConfig.stats.ascending }),
+          supabase.from('saran').select('*').order(tableSortConfig.saran.column, { ascending: tableSortConfig.saran.ascending }),
           supabase.from('siteContent').select('*').limit(1).single(),
           supabase.from('siteSettings').select('*').limit(1).single()
         ]);
@@ -136,8 +143,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setOsisTeam(checkError(osisTeamRes, 'osisTeam'));
         setStats(checkError(statsRes, 'stats'));
         setSaran(checkError(saranRes, 'saran'));
-        if (siteContentRes.data) setSiteContent(siteContentRes.data);
-        if (siteSettingsRes.data) setSiteSettings(siteSettingsRes.data);
+        if (siteContentRes.data) _setSiteContent(siteContentRes.data);
+        if (siteSettingsRes.data) _setSiteSettings(siteSettingsRes.data);
 
       } catch (err: any) {
         setError(err.message);
@@ -163,30 +170,49 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return (stateSetters as any)[setterName];
   }
 
+  const refreshData = async (tableName: TableName) => {
+      const sort = tableSortConfig[tableName] || { column: 'id', ascending: false };
+      const { data: refreshedData, error } = await supabase.from(tableName).select('*').order(sort.column, { ascending: sort.ascending });
+      if (error) { throw error; }
+      if (refreshedData) getSetter(tableName)(refreshedData);
+  }
+
   // Generic CRUD functions targeting Supabase
   const addItem = async (tableName: TableName, item: any) => {
     const { error } = await supabase.from(tableName).insert([item]).select();
     if (error) { addToast(`Gagal menambahkan item: ${error.message}`, 'error'); throw error; }
-    
-    const { data: refreshedData } = await supabase.from(tableName).select('*').order(tableName === 'saran' ? 'created_at' : 'id', { ascending: false });
-    if(refreshedData) getSetter(tableName)(refreshedData);
+    await refreshData(tableName);
   };
   
   const updateItem = async (tableName: TableName, id: number, item: any) => {
     const { error } = await supabase.from(tableName).update(item).eq('id', id).select();
     if (error) { addToast(`Gagal memperbarui item: ${error.message}`, 'error'); throw error; }
-    
-    const { data: refreshedData } = await supabase.from(tableName).select('*').order('id', { ascending: false });
-    if(refreshedData) getSetter(tableName)(refreshedData);
+    await refreshData(tableName);
   };
   
   const deleteItem = async (tableName: TableName, id: number) => {
     const { error } = await supabase.from(tableName).delete().eq('id', id);
     if (error) { addToast(`Gagal menghapus item: ${error.message}`, 'error'); throw error; }
-    
-    const { data: refreshedData } = await supabase.from(tableName).select('*').order(tableName === 'saran' ? 'created_at' : 'id', { ascending: false });
-    if(refreshedData) getSetter(tableName)(refreshedData);
+    await refreshData(tableName);
   };
+
+  const updateSiteContent = async (newContent: SiteContent) => {
+    // FIX: Destructuring id from payload to prevent trying to update the primary key.
+    // This resolves the type error and is a good practice for Supabase updates.
+    const { id, ...updateData } = newContent;
+    const { error } = await supabase.from('siteContent').update(updateData).eq('id', id);
+    if (error) { addToast(`Gagal menyimpan konten: ${error.message}`, 'error'); throw error; }
+    _setSiteContent(newContent);
+  }
+
+  const updateSiteSettings = async (newSettings: SiteSettings) => {
+      // FIX: Destructuring id from payload to prevent trying to update the primary key.
+      // This resolves the type error and is a good practice for Supabase updates.
+      const { id, ...updateData } = newSettings;
+      const { error } = await supabase.from('siteSettings').update(updateData).eq('id', id);
+      if (error) { addToast(`Gagal menyimpan pengaturan: ${error.message}`, 'error'); throw error; }
+      _setSiteSettings(newSettings);
+  }
 
   const addSaran = async (newSaran: Omit<Saran, 'id' | 'created_at'>) => {
     await addItem('saran', newSaran);
@@ -227,7 +253,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const value: DataContextType = {
     announcements, events, articles, achievements, gallery, testimonials, osisTeam, stats, siteContent, siteSettings, saran,
     isLoading, error,
-    addItem, updateItem, deleteItem, setSiteContent, setSiteSettings, addSaran,
+    addItem, updateItem, deleteItem, updateSiteContent, updateSiteSettings, addSaran,
     isLoggedIn, login, logout,
     showLogin, setShowLogin,
     activeAdminSection, setActiveAdminSection,

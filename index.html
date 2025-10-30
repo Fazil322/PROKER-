@@ -1,82 +1,126 @@
-
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSIS SMK LPPMRI 2 KEDUNGREJA</title>
+    <meta name="description" content="A modern, interactive, and informative digital platform for the Student Council (OSIS) of SMK LPPMRI 2 Kedungreja, designed to be the new benchmark for student organization websites in Indonesia.">
+    
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-blue': {
+                            50: '#f0f8ff',
+                            100: '#e0f0ff',
+                            200: '#c2e3ff',
+                            300: '#a3d6ff',
+                            400: '#85c9ff',
+                            500: '#67bcff',
+                            600: '#49afff',
+                            700: '#0252BF',
+                            800: '#01429c',
+                            900: '#013178',
+                            950: '#002155',
+                        },
+                        'brand-yellow': {
+                            300: '#fde047',
+                            400: '#facc15',
+                        },
+                    },
+                    animation: {
+                       'scroll': 'scroll 40s linear infinite',
+                       'fade-in-down': 'fade-in-down 0.5s ease-out forwards',
+                       'fade-in-up': 'fade-in-up 0.5s ease-out 0.2s forwards',
+                    },
+                    keyframes: {
+                       scroll: {
+                         '0%': { transform: 'translateX(0)' },
+                         '100%': { transform: 'translateX(-50%)' },
+                       },
+                       'fade-in-down': {
+                         '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                         '100%': { opacity: '1', transform: 'translateY(0)' },
+                       },
+                       'fade-in-up': {
+                         '0%': { opacity: '0', transform: 'translateY(10px)' },
+                         '100%': { opacity: '1', transform: 'translateY(0)' },
+                       }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://aistudiocdn.com/react@^19.2.0/",
+        "react": "https://aistudiocdn.com/react@^19.2.0",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+        "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.77.0",
+        "react-markdown": "https://aistudiocdn.com/react-markdown@^9.0.1",
+        "remark-gfm": "https://aistudiocdn.com/remark-gfm@^4.0.0"
+      }
+    }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .animation-delay-300 { animation-delay: 0.3s; }
+
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .animated-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .animated-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
-            colors: {
-              'brand-blue': {
-                '50': '#eff8ff',
-                '100': '#dff0ff',
-                '200': '#bce5ff',
-                '300': '#89d4ff',
-                '400': '#52bbff',
-                '500': '#299cff',
-                '600': '#0b7eff',
-                '700': '#0067ee',
-                '800': '#0252bf',
-                '900': '#084599',
-                '950': '#082b61',
-              },
-              'brand-yellow': {
-                '50': '#fefce8',
-                '100': '#fef9c3',
-                '200': '#fef08a',
-                '300': '#fde047',
-                '400': '#facc15',
-                '500': '#eab308',
-                '600': '#ca8a04',
-                '700': '#a16207',
-                '800': '#854d0e',
-                '900': '#713f12',
-                '950': '#422006',
-              },
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      .animated-section {
-        opacity: 0;
-        transform: translateY(40px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-      }
-      .animated-section.is-visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "@google/genai": "https://esm.sh/@google/genai",
-    "react-markdown": "https://esm.sh/react-markdown@9?deps=react@19",
-    "remark-gfm": "https://esm.sh/remark-gfm@4",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
-  }
-}
-</script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
-  <body>
+<body class="bg-gray-100 dark:bg-gray-900">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
-  </body>
+</body>
 </html>

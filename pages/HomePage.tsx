@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../components/Header.tsx';
 import HeroSection from '../components/HeroSection.tsx';
-import Announcements from '../components/Announcements.tsx';
+import AnnouncementTicker from '../components/AnnouncementTicker.tsx';
 import UpcomingEvents from '../components/UpcomingEvents.tsx';
 import LatestNews from '../components/LatestNews.tsx';
 import Achievements from '../components/Achievements.tsx';
@@ -14,21 +14,22 @@ import ProgramIdeaGenerator from '../components/ProgramIdeaGenerator.tsx';
 import KotakSaran from '../components/KotakSaran.tsx';
 import AdminControl from '../components/ui/AdminControl.tsx';
 import AnimatedSection from '../components/ui/AnimatedSection.tsx';
+import BackToTopButton from '../components/BackToTopButton.tsx';
+import ReadingProgressBar from '../components/ui/ReadingProgressBar.tsx';
 
 const HomePage: React.FC = () => {
   return (
     <div className="bg-gray-100 dark:bg-gray-900">
+      <ReadingProgressBar />
       <Header />
       <main>
         <AdminControl section="content">
             <HeroSection />
         </AdminControl>
 
-        <AnimatedSection>
-            <AdminControl section="announcements">
-                <Announcements />
-            </AdminControl>
-        </AnimatedSection>
+        <AdminControl section="announcements">
+            <AnnouncementTicker />
+        </AdminControl>
         
         <AnimatedSection>
             <AdminControl section="events">
@@ -84,6 +85,7 @@ const HomePage: React.FC = () => {
         
       </main>
       <Footer />
+      <BackToTopButton />
     </div>
   );
 };

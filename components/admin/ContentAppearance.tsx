@@ -86,7 +86,7 @@ const NavLinkEditor: React.FC<{
 
 
 const ContentAppearance: React.FC = () => {
-    const { siteContent, setSiteContent, addToast } = useData();
+    const { siteContent, updateSiteContent, addToast } = useData();
     const [formData, setFormData] = useState(siteContent);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -98,10 +98,15 @@ const ContentAppearance: React.FC = () => {
         setFormData(prev => ({...prev, [key]: newLinks}));
     };
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        setSiteContent(formData);
-        addToast("Pengaturan Konten & Tampilan berhasil disimpan!", 'success');
+        try {
+            await updateSiteContent(formData);
+            addToast("Pengaturan Konten & Tampilan berhasil disimpan!", 'success');
+        } catch (error) {
+            // Error toast already handled by context
+            console.error("Failed to save site content:", error);
+        }
     };
 
     return (
