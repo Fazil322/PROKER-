@@ -53,35 +53,57 @@ const Footer: React.FC = () => {
     }
 
     return (
-        <footer id="footer" className="bg-brand-blue-950 text-white">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <footer id="footer" className="relative bg-gradient-to-br from-brand-blue-950 via-brand-blue-900 to-brand-blue-950 text-white overflow-hidden">
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute top-0 left-0 w-96 h-96 bg-brand-blue-500 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent-purple rounded-full blur-3xl"></div>
+            </div>
+            
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-                    {/* About */}
                     <div className="lg:col-span-2">
-                        <h3 className="text-xl font-bold mb-4">{siteContent.siteName}</h3>
+                        <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-white to-brand-blue-200 bg-clip-text text-transparent">{siteContent.siteName}</h3>
                         <p className="text-brand-blue-200 text-sm leading-relaxed">{siteContent.footerAboutText}</p>
                     </div>
-                    {/* Quick Links */}
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">Tautan Cepat</h3>
+                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                            Tautan Cepat
+                        </h3>
                         <ul className="space-y-2">
                             {siteContent.footerNavLinks.map(link => (
                                 <li key={link.id}>
-                                    <a href={link.href} className="text-brand-blue-200 hover:text-white text-sm transition-colors">{link.name}</a>
+                                    <a href={link.href} className="text-brand-blue-200 hover:text-white text-sm transition-all hover:translate-x-1 inline-block">
+                                        → {link.name}
+                                    </a>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    {/* Contact */}
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">Hubungi Kami</h3>
-                        <p className="text-brand-blue-200 text-sm">{siteContent.contactAddress}</p>
-                        <p className="text-brand-blue-200 text-sm mt-2">
-                            Email: <a href={`mailto:${siteSettings.contactEmail}`} className="hover:text-white">{siteSettings.contactEmail}</a>
+                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            Hubungi Kami
+                        </h3>
+                        <p className="text-brand-blue-200 text-sm mb-3">{siteContent.contactAddress}</p>
+                        <p className="text-brand-blue-200 text-sm">
+                            Email: <a href={`mailto:${siteSettings.contactEmail}`} className="hover:text-white transition-colors underline">{siteSettings.contactEmail}</a>
                         </p>
-                        <div className="flex space-x-4 mt-4">
+                        <div className="flex space-x-4 mt-6">
                             {socialLinks.map(link => (
-                                <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="text-brand-blue-200 hover:text-white" title={link.label}>
+                                <a 
+                                    key={link.label} 
+                                    href={link.href} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-brand-blue-200 hover:text-white transition-all transform hover:scale-110 hover:-translate-y-1" 
+                                    title={link.label}
+                                    aria-label={link.label}
+                                >
                                     <span className="sr-only">{link.label}</span>
                                     {link.icon}
                                 </a>
@@ -89,9 +111,9 @@ const Footer: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <div className="mt-12 text-center text-xs text-brand-blue-300">
+                <div className="mt-12 pt-8 border-t border-brand-blue-800/50 text-center text-xs text-brand-blue-300">
                     {copyrightElement}
-                    <p>{siteContent.footerCreditText}</p>
+                    <p className="mt-1">{siteContent.footerCreditText}</p>
                 </div>
             </div>
         </footer>

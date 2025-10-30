@@ -44,34 +44,44 @@ const Header: React.FC = () => {
     };
 
     return (
-        <header id="home" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/80 dark:bg-gray-900/80 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
+        <header id="home" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/90 dark:bg-gray-900/90 shadow-xl backdrop-blur-md' : 'bg-transparent'}`}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0">
-                        <a href="#home" className="text-xl font-bold text-gray-900 dark:text-white">{siteContent.siteName}</a>
+                        <a href="#home" className="text-xl font-bold text-gray-900 dark:text-white hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-all duration-300 transform hover:scale-105">{siteContent.siteName}</a>
                     </div>
                     <nav className="hidden md:block">
                         <ul className="flex items-center space-x-8">
                             {siteContent.headerNavLinks.map(link => (
                                 <li key={link.id}>
-                                    <a href={link.href} className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-colors">{link.name}</a>
+                                    <a href={link.href} className="relative text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-colors group">
+                                        {link.name}
+                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                                    </a>
                                 </li>
                             ))}
                         </ul>
                     </nav>
                     <div className="flex items-center space-x-4">
-                        <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300 hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-colors p-2 rounded-full">
+                        <button 
+                            onClick={toggleTheme} 
+                            className="text-gray-600 dark:text-gray-300 hover:text-brand-blue-600 dark:hover:text-brand-blue-400 transition-all duration-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:rotate-180"
+                            aria-label="Toggle theme"
+                        >
                             {theme === 'light' ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
                         </button>
-                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-gray-800 dark:text-white">
+                        <button 
+                            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                            className="md:hidden text-gray-800 dark:text-white p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            aria-label="Toggle menu"
+                        >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}></path></svg>
                         </button>
                     </div>
                 </div>
             </div>
-            {/* Mobile Menu */}
             {isMenuOpen && (
-                <div className="md:hidden bg-white dark:bg-gray-900 py-4">
+                <div className="md:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-md py-4 shadow-xl animate-slide-in-left">
                      <ul className="flex flex-col items-center space-y-4">
                         {siteContent.headerNavLinks.map(link => (
                             <li key={link.id}>

@@ -12,20 +12,36 @@ const TrophyIcon: React.FC<{className?: string}> = ({className}) => (
 const Achievements: React.FC = () => {
   const { achievements } = useData();
   return (
-    <section id="achievements" className="bg-brand-blue-900 dark:bg-gray-950 text-white py-16 sm:py-20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="achievements" className="relative bg-gradient-to-br from-brand-blue-900 via-brand-blue-800 to-brand-blue-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-white py-16 sm:py-20 overflow-hidden">
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-brand-yellow-400 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent-purple rounded-full blur-3xl animate-float animation-delay-500"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
-            <TrophyIcon className="w-12 h-12 mx-auto text-brand-yellow-400 mb-4" />
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Prestasi Terbaru</h2>
+            <TrophyIcon className="w-16 h-16 mx-auto text-brand-yellow-400 mb-4 animate-float" />
+          <h2 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
+            <span className="bg-gradient-to-r from-brand-yellow-300 to-brand-yellow-500 bg-clip-text text-transparent">Prestasi</span> Terbaru
+          </h2>
           <p className="mt-4 text-lg text-brand-blue-200 dark:text-brand-blue-300">Apresiasi untuk para siswa yang mengharumkan nama sekolah.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {achievements.map((ach) => (
-            <div key={ach.id} className="bg-white/5 rounded-lg p-6 text-center group transition-all duration-300 hover:bg-white/10 hover:shadow-2xl hover:shadow-brand-yellow-400/20 hover:-translate-y-2">
-              <img src={ach.image} alt={ach.student} className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-brand-yellow-400 object-cover transition-transform duration-300 group-hover:scale-105" />
-              <h3 className="text-xl font-semibold text-white">{ach.student}</h3>
-              <p className="text-brand-yellow-400 font-medium mt-1">{ach.competition}</p>
-              <span className="inline-block bg-brand-yellow-400/10 text-brand-yellow-300 text-xs font-semibold mt-3 px-2.5 py-0.5 rounded-full">{ach.level}</span>
+          {achievements.map((ach, index) => (
+            <div 
+              key={ach.id} 
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center group transition-all duration-300 hover:bg-white/15 hover:shadow-2xl hover:shadow-brand-yellow-400/30 hover-lift border border-white/20"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="relative inline-block mb-4">
+                <img src={ach.image} alt={ach.student} className="w-32 h-32 rounded-full mx-auto border-4 border-brand-yellow-400 object-cover transition-transform duration-300 group-hover:scale-110 group-hover:border-brand-yellow-300" />
+                <div className="absolute -top-2 -right-2 bg-brand-yellow-400 rounded-full p-2 shadow-lg">
+                  <TrophyIcon className="w-5 h-5 text-brand-blue-900" />
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-1">{ach.student}</h3>
+              <p className="text-brand-yellow-300 font-medium">{ach.competition}</p>
+              <span className="inline-block bg-brand-yellow-400/20 text-brand-yellow-300 text-sm font-semibold mt-3 px-4 py-1.5 rounded-full border border-brand-yellow-400/30">{ach.level}</span>
             </div>
           ))}
         </div>
