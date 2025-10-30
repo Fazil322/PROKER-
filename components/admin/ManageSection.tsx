@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 // FIX: Add .tsx extension to file import.
 import { useData, TableName } from '../../context/DataContext.tsx';
@@ -41,6 +40,7 @@ const sectionConfig: Record<string, { title: string; fields: Field[]; dataKey: T
             { name: 'date', label: 'Tanggal', type: 'text', required: true },
             { name: 'image', label: 'URL Gambar', type: 'url', required: true },
             { name: 'excerpt', label: 'Kutipan', type: 'textarea', rows: 4, required: true },
+            { name: 'content', label: 'Konten Lengkap (Markdown)', type: 'textarea', rows: 10, required: true },
         ]
     },
     achievements: {
@@ -195,7 +195,7 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map(item => (
+                            {items && items.map(item => (
                                 <tr key={item.id} className="bg-white border-b hover:bg-gray-50">
                                     {config.fields.slice(0, 4).map(field => (
                                         <td key={field.name} className="px-6 py-4">{String(item[field.name]).substring(0, 50)}{String(item[field.name]).length > 50 ? '...' : ''}</td>

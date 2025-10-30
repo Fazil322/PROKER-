@@ -1,4 +1,3 @@
-
 import React from 'react';
 // FIX: Add .tsx extension to file import.
 import Header from '../components/Header.tsx';
@@ -36,7 +35,7 @@ const HomePage: React.FC = () => {
     <div className="bg-gray-100 dark:bg-gray-900">
       <Header />
       <main>
-        <AdminControl section="hero">
+        <AdminControl section="content">
             <HeroSection />
         </AdminControl>
 

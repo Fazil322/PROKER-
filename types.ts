@@ -1,4 +1,3 @@
-
 export interface NavLink {
   id: number;
   name: string;
@@ -72,6 +71,7 @@ export interface Article {
   date: string;
   image: string;
   excerpt: string;
+  content: string; // Added for full article content
 }
 
 export interface Achievement {

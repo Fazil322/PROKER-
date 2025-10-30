@@ -1,18 +1,25 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { supabase, isSupabaseConfigured } from '../lib/supabaseClient.ts';
+import { supabase } from '../lib/supabaseClient.ts';
 import {
   Announcement, Event, Article, Achievement, GalleryImage, Testimonial, TeamMember, Stat, SiteContent, SiteSettings, AdminSection, Toast, Saran,
 } from '../types.ts';
 import {
   INITIAL_SITE_CONTENT,
   INITIAL_SITE_SETTINGS,
+  INITIAL_ANNOUNCEMENTS,
+  INITIAL_EVENTS,
+  INITIAL_ARTICLES,
+  INITIAL_ACHIEVEMENTS,
+  INITIAL_GALLERY,
+  INITIAL_TESTIMONIALS,
+  INITIAL_OSIS_TEAM,
+  INITIAL_STATS
 } from '../constants.ts';
 
-const LOCAL_STORAGE_KEY = 'osis-website-auth'; // Only for auth now
+const AUTH_STORAGE_KEY = 'osis-website-auth';
 
 // Helper type for table names
 export type TableName = 'announcements' | 'events' | 'articles' | 'achievements' | 'gallery' | 'testimonials' | 'osisTeam' | 'stats' | 'saran';
-
 
 interface DataContextType {
   // Data states
@@ -59,7 +66,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const getInitialAuthState = () => {
   try {
-    const item = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+    const item = window.localStorage.getItem(AUTH_STORAGE_KEY);
     return item ? JSON.parse(item) : { adminPassword: 'admin' };
   } catch (error) {
     console.warn('Error reading auth from localStorage', error);
@@ -68,14 +75,14 @@ const getInitialAuthState = () => {
 };
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [gallery, setGallery] = useState<GalleryImage[]>([]);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [osisTeam, setOsisTeam] = useState<TeamMember[]>([]);
-  const [stats, setStats] = useState<Stat[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>(INITIAL_ANNOUNCEMENTS);
+  const [events, setEvents] = useState<Event[]>(INITIAL_EVENTS);
+  const [articles, setArticles] = useState<Article[]>(INITIAL_ARTICLES);
+  const [achievements, setAchievements] = useState<Achievement[]>(INITIAL_ACHIEVEMENTS);
+  const [gallery, setGallery] = useState<GalleryImage[]>(INITIAL_GALLERY);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(INITIAL_TESTIMONIALS);
+  const [osisTeam, setOsisTeam] = useState<TeamMember[]>(INITIAL_OSIS_TEAM);
+  const [stats, setStats] = useState<Stat[]>(INITIAL_STATS);
   const [siteContent, setSiteContent] = useState<SiteContent>(INITIAL_SITE_CONTENT);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
   const [saran, setSaran] = useState<Saran[]>([]);
@@ -89,17 +96,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [adminPassword, setAdminPassword] = useState(getInitialAuthState().adminPassword);
 
   const [toasts, setToasts] = useState<Toast[]>([]);
+  
+  const stateSetters = {
+    setAnnouncements, setEvents, setArticles, setAchievements, setGallery, setTestimonials, setOsisTeam, setStats, setSaran
+  };
 
-  // Fetch all data from Supabase on initial load
+
+  // Fetch data on initial load from Supabase
   useEffect(() => {
-    const fetchAllData = async () => {
-      if (!isSupabaseConfigured || !supabase) {
-        setIsLoading(false);
-        // In local dev, use some placeholder data if needed or just leave empty
-        // For now, it will use the default empty states which is fine.
-        return;
-      }
-
+    const loadData = async () => {
       setIsLoading(true);
       setError(null);
       try {
@@ -116,13 +121,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           supabase.from('osisTeam').select('*').order('id', { ascending: true }),
           supabase.from('stats').select('*').order('id', { ascending: true }),
           supabase.from('saran').select('*').order('created_at', { ascending: false }),
-          supabase.from('siteContent').select('*').limit(1).single(), // Assuming single row table
-          supabase.from('siteSettings').select('*').limit(1).single() // Assuming single row table
+          supabase.from('siteContent').select('*').limit(1).single(),
+          supabase.from('siteSettings').select('*').limit(1).single()
         ]);
         
-        // Handle potential errors for each query
-        const checkError = (res: any, name: string) => { if (res.error) throw new Error(`Failed to fetch ${name}: ${res.error.message}`); return res.data; };
-
+        const checkError = (res: any, name: string) => { if (res.error) throw new Error(`Gagal memuat ${name}: ${res.error.message}`); return res.data; };
+        
         setAnnouncements(checkError(announcementsRes, 'announcements'));
         setEvents(checkError(eventsRes, 'events'));
         setArticles(checkError(articlesRes, 'articles'));
@@ -137,79 +141,54 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       } catch (err: any) {
         setError(err.message);
-        addToast("Gagal memuat data dari database.", 'error');
+        addToast("Gagal memuat data. Pastikan kredensial Supabase benar.", 'error');
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
+      setIsLoading(false);
     };
-    fetchAllData();
+    loadData();
   }, []);
   
-  // Persist only auth state to localStorage
+  // Persist auth state to localStorage
   useEffect(() => {
     try {
-      window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ adminPassword }));
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ adminPassword }));
     } catch (error) {
       console.warn('Error writing auth to localStorage', error);
     }
   }, [adminPassword]);
 
-  // Generic CRUD functions
+  const getSetter = (tableName: TableName) => {
+      const setterName = `set${tableName.charAt(0).toUpperCase() + tableName.slice(1)}`;
+      return (stateSetters as any)[setterName];
+  }
+
+  // Generic CRUD functions targeting Supabase
   const addItem = async (tableName: TableName, item: any) => {
-    if (!isSupabaseConfigured || !supabase) {
-        addToast('Mode pengembangan: Perubahan tidak disimpan.', 'info');
-        return;
-    }
-    const { data, error } = await supabase.from(tableName).insert([item]).select();
-    if (error) {
-      addToast(`Gagal menambahkan item: ${error.message}`, 'error');
-      throw error;
-    }
-    // Refresh local state
-    const { data: refreshedData } = await supabase.from(tableName).select('*').order('id', { ascending: false });
-    const setterName = `set${tableName.charAt(0).toUpperCase() + tableName.slice(1)}`;
-    const setter = { setAnnouncements, setEvents, setArticles, setAchievements, setGallery, setTestimonials, setOsisTeam, setStats, setSaran }[setterName];
-    if (setter && refreshedData) setter(refreshedData as any);
+    const { error } = await supabase.from(tableName).insert([item]).select();
+    if (error) { addToast(`Gagal menambahkan item: ${error.message}`, 'error'); throw error; }
+    
+    const { data: refreshedData } = await supabase.from(tableName).select('*').order(tableName === 'saran' ? 'created_at' : 'id', { ascending: false });
+    if(refreshedData) getSetter(tableName)(refreshedData);
   };
   
   const updateItem = async (tableName: TableName, id: number, item: any) => {
-    if (!isSupabaseConfigured || !supabase) {
-        addToast('Mode pengembangan: Perubahan tidak disimpan.', 'info');
-        return;
-    }
-    const { data, error } = await supabase.from(tableName).update(item).eq('id', id).select();
-    if (error) {
-       addToast(`Gagal memperbarui item: ${error.message}`, 'error');
-      throw error;
-    }
-     const { data: refreshedData } = await supabase.from(tableName).select('*').order('id', { ascending: false });
-    const setterName = `set${tableName.charAt(0).toUpperCase() + tableName.slice(1)}`;
-    const setter = { setAnnouncements, setEvents, setArticles, setAchievements, setGallery, setTestimonials, setOsisTeam, setStats, setSaran }[setterName];
-    if (setter && refreshedData) setter(refreshedData as any);
+    const { error } = await supabase.from(tableName).update(item).eq('id', id).select();
+    if (error) { addToast(`Gagal memperbarui item: ${error.message}`, 'error'); throw error; }
+    
+    const { data: refreshedData } = await supabase.from(tableName).select('*').order('id', { ascending: false });
+    if(refreshedData) getSetter(tableName)(refreshedData);
   };
   
   const deleteItem = async (tableName: TableName, id: number) => {
-    if (!isSupabaseConfigured || !supabase) {
-        addToast('Mode pengembangan: Perubahan tidak disimpan.', 'info');
-        return;
-    }
-     const { error } = await supabase.from(tableName).delete().eq('id', id);
-    if (error) {
-       addToast(`Gagal menghapus item: ${error.message}`, 'error');
-       throw error;
-    }
-    const { data: refreshedData } = await supabase.from(tableName).select('*').order('id', { ascending: false });
-    const setterName = `set${tableName.charAt(0).toUpperCase() + tableName.slice(1)}`;
-    const setter = { setAnnouncements, setEvents, setArticles, setAchievements, setGallery, setTestimonials, setOsisTeam, setStats, setSaran }[setterName];
-    if (setter && refreshedData) setter(refreshedData as any);
+    const { error } = await supabase.from(tableName).delete().eq('id', id);
+    if (error) { addToast(`Gagal menghapus item: ${error.message}`, 'error'); throw error; }
+    
+    const { data: refreshedData } = await supabase.from(tableName).select('*').order(tableName === 'saran' ? 'created_at' : 'id', { ascending: false });
+    if(refreshedData) getSetter(tableName)(refreshedData);
   };
 
   const addSaran = async (newSaran: Omit<Saran, 'id' | 'created_at'>) => {
-    if (!isSupabaseConfigured) {
-        addToast('Mode pengembangan: Saran tidak akan terkirim.', 'info');
-        return;
-    }
     await addItem('saran', newSaran);
     addToast('Saran Anda telah berhasil dikirim. Terima kasih!', 'success');
   };
@@ -221,6 +200,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       addToast('Login berhasil! Selamat datang, Admin.', 'success');
       return true;
     }
+    addToast('Kode akses yang Anda masukkan salah.', 'error');
     return false;
   };
   
