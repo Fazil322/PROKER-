@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GalleryImage } from '../../types.ts';
 
 interface LightboxProps {
@@ -8,46 +8,21 @@ interface LightboxProps {
 }
 
 const Lightbox: React.FC<LightboxProps> = ({ images, currentIndex, onClose }) => {
+  const [localIndex, setLocalIndex] = useState(currentIndex);
+    
+  const handleNext = useCallback(() => {
+      setLocalIndex((prevIndex) => (prevIndex + 1) % images.length);
+  }, [images.length]);
+
+  const handlePrevious = useCallback(() => {
+      setLocalIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+  }, [images.length]);
   
-  const goToNext = useCallback(() => {
-    const nextIndex = (currentIndex + 1) % images.length;
-    // This is a simple implementation. For a more robust solution,
-    // the parent component would need to update the currentIndex.
-    // However, this approach won't work as props are immutable.
-    // The parent needs to expose a setCurrentIndex function.
-    // Let's assume the parent handles the index change. 
-    // This component will just call handlers.
-    // For now, let's just make the parent handle the index change.
-    // The parent component should pass a function to change the index.
-    // But for simplicity, we'll just handle it internally for now by re-rendering.
-    // Wait, the parent `GalleryPreview` DOES control the index.
-    // So this component should receive `setCurrentIndex` prop.
-    // Let's modify the props.
-    // No, let's keep it simple. The parent will re-render this component with a new index.
-    // The parent should expose `goToNext` and `goToPrevious` functions.
-    // Let's just pass `onNext` and `onPrevious` handlers.
-    // Okay, looking at `GalleryPreview`, it just sets the initial index.
-    // The lightbox must handle its own state to navigate.
-    const [localIndex, setLocalIndex] = React.useState(currentIndex);
-    
-    useEffect(() => {
-        setLocalIndex(currentIndex);
-    }, [currentIndex]);
-    
-    const handleNext = () => {
-        setLocalIndex((prevIndex) => (prevIndex + 1) % images.length);
-    };
-
-    const handlePrevious = () => {
-        setLocalIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-    };
-    
-    const handleKeyDown = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Escape') onClose();
-        if (event.key === 'ArrowRight') handleNext();
-        if (event.key === 'ArrowLeft') handlePrevious();
-    }, [onClose, images.length]);
-
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+      if (event.key === 'ArrowRight') handleNext();
+      if (event.key === 'ArrowLeft') handlePrevious();
+  }, [onClose, handleNext, handlePrevious]);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
