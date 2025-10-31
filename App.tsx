@@ -5,6 +5,7 @@ import { useData } from './context/DataContext.tsx';
 import AdminPanel from './components/admin/AdminPanel.tsx';
 import Login from './components/Login.tsx';
 import ToastContainer from './components/ui/ToastContainer.tsx';
+import Chatbot from './components/Chatbot.tsx';
 
 function App() {
   const { isLoggedIn, showLogin } = useData();
@@ -15,6 +16,7 @@ function App() {
       {isLoggedIn && <AdminPanel />}
       {showLogin && <Login />}
       <ToastContainer />
+      <Chatbot />
     </>
   );
 }

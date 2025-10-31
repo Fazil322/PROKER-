@@ -1,7 +1,8 @@
+
 import React from 'react';
 import Header from '../components/Header.tsx';
 import HeroSection from '../components/HeroSection.tsx';
-import AnnouncementTicker from '../components/AnnouncementTicker.tsx';
+import Announcements from '../components/Announcements.tsx';
 import UpcomingEvents from '../components/UpcomingEvents.tsx';
 import LatestNews from '../components/LatestNews.tsx';
 import Achievements from '../components/Achievements.tsx';
@@ -16,6 +17,7 @@ import AdminControl from '../components/ui/AdminControl.tsx';
 import AnimatedSection from '../components/ui/AnimatedSection.tsx';
 import BackToTopButton from '../components/BackToTopButton.tsx';
 import ReadingProgressBar from '../components/ui/ReadingProgressBar.tsx';
+import EVotingSection from '../components/EVotingSection.tsx';
 
 const HomePage: React.FC = () => {
   return (
@@ -26,10 +28,18 @@ const HomePage: React.FC = () => {
         <AdminControl section="content">
             <HeroSection />
         </AdminControl>
+        
+        <AnimatedSection>
+            <AdminControl section="evoting">
+                <EVotingSection />
+            </AdminControl>
+        </AnimatedSection>
 
-        <AdminControl section="announcements">
-            <AnnouncementTicker />
-        </AdminControl>
+        <AnimatedSection>
+            <AdminControl section="announcements">
+                <Announcements />
+            </AdminControl>
+        </AnimatedSection>
         
         <AnimatedSection>
             <AdminControl section="events">
@@ -68,7 +78,9 @@ const HomePage: React.FC = () => {
         </AnimatedSection>
 
         <AnimatedSection>
-            <ProgramIdeaGenerator />
+            <AdminControl section="content">
+                <ProgramIdeaGenerator />
+            </AdminControl>
         </AnimatedSection>
 
         <AnimatedSection>

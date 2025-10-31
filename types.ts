@@ -49,7 +49,8 @@ export type AdminSection =
   | 'stats'
   | 'content'
   | 'settings'
-  | 'saran';
+  | 'saran'
+  | 'evoting';
 
 
 export interface Announcement {
@@ -121,4 +122,31 @@ export interface Saran {
   class: string;
   suggestion: string;
   created_at: string;
+}
+
+export interface EVotingEvent {
+  id: number;
+  title: string;
+  description: string;
+  start_time: string;
+  end_time: string;
+  is_active: boolean;
+}
+
+export interface EVotingCandidate {
+  id: number;
+  event_id: number;
+  name: string;
+  image_url: string;
+  vision: string;
+  mission: string;
+}
+
+export interface EVotingToken {
+  id: number;
+  event_id: number;
+  token: string;
+  is_used: boolean;
+  used_at: string | null;
+  voted_for_candidate_id: number | null;
 }
