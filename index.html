@@ -9,6 +9,9 @@
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- AOS (Animate on Scroll) CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <!-- Custom Tailwind Configuration -->
     <script>
         tailwind.config = {
@@ -39,6 +42,12 @@
                        'fade-in-down': 'fade-in-down 0.5s ease-out forwards',
                        'fade-in-up': 'fade-in-up 0.5s ease-out 0.2s forwards',
                        'slide-in-up': 'slide-in-up 0.5s ease-out forwards',
+                       'modal-fade-in': 'modal-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                       'modal-content-show': 'modal-content-show 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                       'ken-burns': 'ken-burns 20s ease-out forwards infinite',
+                       'bounce-slow': 'bounce-slow 2s infinite',
+                       'fade-slide-in': 'fade-slide-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                       'live-pulse': 'live-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                        scroll: {
@@ -56,7 +65,33 @@
                        'slide-in-up': {
                          '0%': { opacity: '0', transform: 'translateY(100%)' },
                          '100%': { opacity: '1', transform: 'translateY(0)' },
-                       }
+                       },
+                       'modal-fade-in': {
+                         '0%': { backgroundColor: 'rgba(0, 0, 0, 0)' },
+                         '100%': { backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+                       },
+                       'modal-content-show': {
+                         '0%': { opacity: '0', transform: 'scale(0.95)' },
+                         '100%': { opacity: '1', transform: 'scale(1)' },
+                       },
+                       'ken-burns': {
+                        '0%': { transform: 'scale(1) rotate(0deg)', filter: 'brightness(1)' },
+                        '50%': { transform: 'scale(1.1) rotate(1deg)', filter: 'brightness(1.1)' },
+                        '100%': { transform: 'scale(1) rotate(0deg)', filter: 'brightness(1)' },
+                       },
+                       'bounce-slow': {
+                        '0%, 100%': { transform: 'translateY(-15%)', animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)' },
+                        '50%': { transform: 'translateY(0)', animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)' },
+                       },
+                       'fade-slide-in': {
+                          '0%': { opacity: 0, transform: 'translateX(20px)' },
+                          '100%': { opacity: 1, transform: 'translateX(0)' },
+                       },
+                       'live-pulse': {
+                         '50%': {
+                           opacity: '.5',
+                         },
+                       },
                     }
                 }
             }
@@ -72,7 +107,9 @@
         "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
         "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.77.0",
         "react-markdown": "https://aistudiocdn.com/react-markdown@^9.0.1",
-        "remark-gfm": "https://aistudiocdn.com/remark-gfm@^4.0.0"
+        "remark-gfm": "https://aistudiocdn.com/remark-gfm@^4.0.0",
+        "chart.js": "https://aistudiocdn.com/chart.js@^4.4.3",
+        "react-chartjs-2": "https://aistudiocdn.com/react-chartjs-2@^5.2.0"
       }
     }
     </script>
@@ -82,43 +119,6 @@
             font-family: 'Inter', sans-serif;
         }
         
-        .animation-delay-300 { animation-delay: 0.3s; }
-
-        .flip-card {
-            perspective: 1000px;
-        }
-        .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        .flip-card:hover .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-        .flip-card-front, .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-        }
-        .flip-card-back {
-            transform: rotateY(180deg);
-        }
-        
-        .animated-section {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-        .animated-section.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         /* Lightbox Styles */
         .lightbox-overlay {
             position: fixed;
@@ -130,11 +130,13 @@
             justify-content: center;
             padding: 1rem;
             backdrop-filter: blur(4px);
+            animation: modal-fade-in 0.3s ease forwards;
         }
         .lightbox-content {
             position: relative;
             max-width: 90vw;
             max-height: 90vh;
+            animation: modal-content-show 0.3s ease forwards;
         }
         .lightbox-content img {
             max-width: 100%;
@@ -154,10 +156,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.2s;
         }
         .lightbox-btn:hover {
             background-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-50%) scale(1.1);
         }
 
         /* Chatbot Styles */
@@ -176,6 +179,194 @@
              scrollbar-color: #67bcff #1f2937;
         }
 
+        /* Card Lift & Glow */
+        .card-lift-glow {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-lift-glow:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        .dark .card-lift-glow:hover {
+             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Nav Link Underline Reveal */
+        .nav-link {
+            position: relative;
+            padding-bottom: 8px; /* give space for underline */
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 5px; /* adjust position */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #0252BF; /* brand-blue-700 */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .nav-link::after {
+            background-color: #67bcff; /* brand-blue-500 */
+        }
+        .nav-link.active::after, .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Reveal Symphony */
+        .hero-reveal {
+            opacity: 0;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(20px);
+        }
+        .hero-reveal.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Animated Button Micro-interactions */
+        .btn-animated {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+        .btn-animated:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-animated:active {
+            transform: translateY(0px) scale(0.98);
+            box-shadow: none;
+        }
+
+        /* Animated Icon Hover Effect */
+        .icon-hover-effect {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .icon-hover-effect:hover {
+            transform: scale(1.15);
+        }
+
+        /* Form Input Transition */
+        input, textarea {
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        /* Dot Grid Pattern */
+        .dot-grid-bg {
+            background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.1) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .dark .dot-grid-bg {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+        }
+
+        /* Custom Scrollbar for Carousel */
+        .horizontal-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #a3d6ff #e0f0ff;
+        }
+        .dark .horizontal-scrollbar {
+            scrollbar-color: #01429c #002155;
+        }
+        .horizontal-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .horizontal-scrollbar::-webkit-scrollbar-track {
+            background: #e0f0ff;
+            border-radius: 10px;
+        }
+        .dark .horizontal-scrollbar::-webkit-scrollbar-track {
+            background: #002155;
+        }
+        .horizontal-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #a3d6ff;
+            border-radius: 10px;
+            border: 2px solid #e0f0ff;
+        }
+        .dark .horizontal-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #01429c;
+            border: 2px solid #002155;
+        }
+
+        /* Org Chart Styles */
+        .org-chart ul {
+            position: relative;
+            padding: 1em 0;
+            white-space: nowrap;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .org-chart ul::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .org-chart li {
+            display: inline-block;
+            vertical-align: top;
+            text-align: center;
+            list-style-type: none;
+            position: relative;
+            padding: 1em .5em 0 .5em;
+        }
+        .org-chart li::before, .org-chart li::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 50%;
+            border-top: 2px solid #a3d6ff;
+            width: 50%;
+            height: 1em;
+        }
+        .org-chart li::after {
+            right: auto;
+            left: 50%;
+            border-left: 2px solid #a3d6ff;
+        }
+        .org-chart li:only-child::after, .org-chart li:only-child::before {
+            display: none;
+        }
+        .org-chart li:only-child {
+            padding-top: 0;
+        }
+        .org-chart li:first-child::before, .org-chart li:last-child::after {
+            border: 0 none;
+        }
+        .org-chart li:last-child::before {
+            border-right: 2px solid #a3d6ff;
+            border-radius: 0 5px 0 0;
+        }
+        .org-chart li:first-child::after {
+            border-radius: 5px 0 0 0;
+        }
+        .org-chart ul ul::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            border-left: 2px solid #a3d6ff;
+            width: 0;
+            height: 1em;
+        }
+        .org-chart li div {
+            border: 2px solid #a3d6ff;
+            padding: .5em .75em;
+            text-decoration: none;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.9);
+            font-family: arial, verdana, tahoma;
+            display: inline-block;
+            border-radius: 5px;
+            transition: all .2s;
+        }
+        .dark .org-chart li div {
+            background-color: #1f2937;
+            color: #f3f4f6;
+            border-color: #01429c;
+        }
+
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -184,5 +375,16 @@
 <body class="bg-gray-100 dark:bg-gray-900">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
+    
+    <!-- AOS (Animate on Scroll) JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        easing: 'ease-out-cubic',
+        once: true,
+        offset: 100
+      });
+    </script>
 </body>
 </html>

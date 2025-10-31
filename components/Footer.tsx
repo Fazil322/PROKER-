@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useData } from '../context/DataContext.tsx';
 
@@ -55,37 +54,57 @@ const Footer: React.FC = () => {
     return (
         <footer id="footer" className="bg-brand-blue-950 text-white">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-                    {/* About */}
-                    <div className="lg:col-span-2">
-                        <h3 className="text-xl font-bold mb-4">{siteContent.siteName}</h3>
-                        <p className="text-brand-blue-200 text-sm leading-relaxed">{siteContent.footerAboutText}</p>
-                    </div>
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4">Tautan Cepat</h3>
-                        <ul className="space-y-2">
-                            {siteContent.footerNavLinks.map(link => (
-                                <li key={link.id}>
-                                    <a href={link.href} className="text-brand-blue-200 hover:text-white text-sm transition-colors">{link.name}</a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    {/* Contact */}
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4">Hubungi Kami</h3>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                    {/* About & Contact */}
+                    <div className="md:col-span-5">
+                         <div className="mb-4">
+                            {siteContent.siteLogoUrl ? (
+                                <img src={siteContent.siteLogoUrl} alt={siteContent.siteName} className="h-12 w-auto" />
+                           ) : (
+                                <h3 className="text-xl font-bold">{siteContent.siteName}</h3>
+                           )}
+                         </div>
+                        <p className="text-brand-blue-200 text-sm leading-relaxed mb-6">{siteContent.footerAboutText}</p>
+                        <h4 className="text-lg font-semibold mb-4">Hubungi Kami</h4>
                         <p className="text-brand-blue-200 text-sm">{siteContent.contactAddress}</p>
                         <p className="text-brand-blue-200 text-sm mt-2">
                             Email: <a href={`mailto:${siteSettings.contactEmail}`} className="hover:text-white">{siteSettings.contactEmail}</a>
                         </p>
                         <div className="flex space-x-4 mt-4">
                             {socialLinks.map(link => (
-                                <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="text-brand-blue-200 hover:text-white" title={link.label}>
+                                <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="text-brand-blue-200 hover:text-white icon-hover-effect" title={link.label}>
                                     <span className="sr-only">{link.label}</span>
                                     {link.icon}
                                 </a>
                             ))}
+                        </div>
+                    </div>
+
+                    {/* Quick Links & Map */}
+                    <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-8">
+                         <div>
+                            <h3 className="text-lg font-semibold mb-4">Tautan Cepat</h3>
+                            <ul className="space-y-2">
+                                {siteContent.footerNavLinks.map(link => (
+                                    <li key={link.id}>
+                                        <a href={link.href} className="text-brand-blue-200 hover:text-white text-sm transition-colors">{link.name}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                             <h3 className="text-lg font-semibold mb-4">Lokasi Kami</h3>
+                             <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-lg">
+                                <iframe 
+                                    src={siteContent.googleMapsUrl}
+                                    width="100%" 
+                                    height="100%" 
+                                    style={{ border: 0 }} 
+                                    allowFullScreen={false} 
+                                    loading="lazy" 
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                ></iframe>
+                             </div>
                         </div>
                     </div>
                 </div>

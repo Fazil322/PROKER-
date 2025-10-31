@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { supabase } from '../lib/supabaseClient.ts';
 import {
   Announcement, Event, Article, Achievement, GalleryImage, Testimonial, TeamMember, Stat, SiteContent, SiteSettings, AdminSection, Toast, Saran,
-  EVotingEvent, EVotingCandidate, EVotingToken
+  EVotingEvent, EVotingCandidate, EVotingToken, Document, FinancialRecord, EventRegistration
 } from '../types.ts';
 import {
   INITIAL_SITE_CONTENT,
@@ -14,13 +14,15 @@ import {
   INITIAL_GALLERY,
   INITIAL_TESTIMONIALS,
   INITIAL_OSIS_TEAM,
-  INITIAL_STATS
+  INITIAL_STATS,
+  INITIAL_DOCUMENTS,
+  INITIAL_FINANCIALS
 } from '../constants.ts';
 
 const AUTH_STORAGE_KEY = 'osis-website-auth';
 
 // Helper type for table names
-export type TableName = 'announcements' | 'events' | 'articles' | 'achievements' | 'gallery' | 'testimonials' | 'osisTeam' | 'stats' | 'saran' | 'siteContent' | 'siteSettings' | 'evoting_events' | 'evoting_candidates' | 'evoting_tokens';
+export type TableName = 'announcements' | 'events' | 'articles' | 'achievements' | 'gallery' | 'testimonials' | 'osisTeam' | 'stats' | 'saran' | 'siteContent' | 'siteSettings' | 'evoting_events' | 'evoting_candidates' | 'evoting_tokens' | 'documents' | 'financials' | 'event_registrations';
 
 const tableSortConfig: Record<string, { column: string; ascending: boolean }> = {
     events: { column: 'date', ascending: true },
@@ -43,6 +45,8 @@ interface DataContextType {
   testimonials: Testimonial[];
   osisTeam: TeamMember[];
   stats: Stat[];
+  documents: Document[];
+  financials: FinancialRecord[];
   siteContent: SiteContent;
   siteSettings: SiteSettings;
   saran: Saran[];
@@ -59,6 +63,8 @@ interface DataContextType {
   updateSiteContent: (newContent: SiteContent) => Promise<void>;
   updateSiteSettings: (newSettings: SiteSettings) => Promise<void>;
   addSaran: (newSaran: Omit<Saran, 'id' | 'created_at'>) => Promise<void>;
+  registerForEvent: (registration: Omit<EventRegistration, 'id' | 'registered_at'>) => Promise<void>;
+  getRegistrationsForEvent: (eventId: number) => Promise<EventRegistration[]>;
 
   // E-Voting Functions
   castVote: (token: string, candidateId: number, eventId: number) => Promise<{success: boolean, message: string}>;
@@ -112,6 +118,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [testimonials, setTestimonials] = useState<Testimonial[]>(INITIAL_TESTIMONIALS);
   const [osisTeam, setOsisTeam] = useState<TeamMember[]>(INITIAL_OSIS_TEAM);
   const [stats, setStats] = useState<Stat[]>(INITIAL_STATS);
+  const [documents, setDocuments] = useState<Document[]>(INITIAL_DOCUMENTS);
+  const [financials, setFinancials] = useState<FinancialRecord[]>(INITIAL_FINANCIALS);
   const [siteContent, _setSiteContent] = useState<SiteContent>(INITIAL_SITE_CONTENT);
   const [siteSettings, _setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
   const [saran, setSaran] = useState<Saran[]>([]);
@@ -128,88 +136,100 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [toasts, setToasts] = useState<Toast[]>([]);
   
   const stateSetters = {
-    setAnnouncements, setEvents, setArticles, setAchievements, setGallery, setTestimonials, setOsisTeam, setStats, setSaran
+    setAnnouncements, setEvents, setArticles, setAchievements, setGallery, setTestimonials, setOsisTeam, setStats, setSaran, setDocuments, setFinancials
   };
 
-
-  // Fetch data on initial load from Supabase
   useEffect(() => {
     const loadData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        // Fetch core data
-        const [
-          announcementsRes, eventsRes, articlesRes, achievementsRes, galleryRes, 
-          testimonialsRes, osisTeamRes, statsRes, saranRes, siteContentRes, siteSettingsRes
-        ] = await Promise.all([
-          supabase.from('announcements').select('*').order('id', { ascending: false }),
-          supabase.from('events').select('*').order(tableSortConfig.events.column, { ascending: tableSortConfig.events.ascending }),
-          supabase.from('articles').select('*').order('id', { ascending: false }),
-          supabase.from('achievements').select('*').order('id', { ascending: false }),
-          supabase.from('gallery').select('*').order('id', { ascending: false }),
-          supabase.from('testimonials').select('*').order('id', { ascending: false }),
-          supabase.from('osisTeam').select('*').order(tableSortConfig.osisTeam.column, { ascending: tableSortConfig.osisTeam.ascending }),
-          supabase.from('stats').select('*').order(tableSortConfig.stats.column, { ascending: tableSortConfig.stats.ascending }),
-          supabase.from('saran').select('*').order(tableSortConfig.saran.column, { ascending: tableSortConfig.saran.ascending }),
-          supabase.from('siteContent').select('*').limit(1).single(),
-          supabase.from('siteSettings').select('*').limit(1).single(),
-        ]);
+        setIsLoading(true);
+        setError(null);
         
-        const checkError = (res: any, name: string) => { if (res.error && res.error.code !== 'PGRST116') throw new Error(`Gagal memuat ${name}: ${res.error.message}`); return res.data; };
+        const tableConfigs = [
+            { name: 'announcements', setter: setAnnouncements, order: { column: 'id', ascending: false } },
+            { name: 'events', setter: setEvents, order: { column: 'date', ascending: true } },
+            { name: 'articles', setter: setArticles, order: { column: 'id', ascending: false } },
+            { name: 'achievements', setter: setAchievements, order: { column: 'id', ascending: false } },
+            { name: 'gallery', setter: setGallery, order: { column: 'id', ascending: false } },
+            { name: 'testimonials', setter: setTestimonials, order: { column: 'id', ascending: false } },
+            { name: 'osisTeam', setter: setOsisTeam, order: { column: 'id', ascending: true } },
+            { name: 'stats', setter: setStats, order: { column: 'id', ascending: true } },
+            { name: 'saran', setter: setSaran, order: { column: 'created_at', ascending: false } },
+            { name: 'documents', setter: setDocuments, order: { column: 'id', ascending: false } },
+            { name: 'financials', setter: setFinancials, order: { column: 'id', ascending: false } },
+        ];
         
-        setAnnouncements(checkError(announcementsRes, 'announcements'));
-        setEvents(checkError(eventsRes, 'events'));
-        setArticles(checkError(articlesRes, 'articles'));
-        setAchievements(checkError(achievementsRes, 'achievements'));
-        setGallery(checkError(galleryRes, 'gallery'));
-        setTestimonials(checkError(testimonialsRes, 'testimonials'));
-        setOsisTeam(checkError(osisTeamRes, 'osisTeam'));
-        setStats(checkError(statsRes, 'stats'));
-        setSaran(checkError(saranRes, 'saran'));
-        if (siteContentRes.data) _setSiteContent(siteContentRes.data);
-        if (siteSettingsRes.data) _setSiteSettings(siteSettingsRes.data);
+        const dataPromises = tableConfigs.map(config => 
+            supabase.from(config.name).select('*').order(config.order.column, { ascending: config.order.ascending })
+        );
+        const singleDataPromises = [
+            supabase.from('siteContent').select('*').limit(1).single(),
+            supabase.from('siteSettings').select('*').limit(1).single()
+        ];
         
-        // Gracefully fetch e-voting data to prevent app crash if tables don't exist
-        try {
-          const { data: activeEventData, error: activeEventError } = await supabase
-              .from('evoting_events')
-              .select('*')
-              .eq('is_active', true)
-              .limit(1)
-              .single();
-          
-          // The error code for a missing table is '42P01'. We ignore this and "no rows found".
-          if (activeEventError && activeEventError.code !== 'PGRST116' && activeEventError.code !== '42P01') {
-              throw activeEventError;
-          }
+        const allPromises = [...dataPromises, ...singleDataPromises];
+        const results = await Promise.allSettled(allPromises);
 
-          if(activeEventData) {
-            const { data: candidates, error: candidatesError } = await supabase.from('evoting_candidates').select('*').eq('event_id', activeEventData.id);
-            if (candidatesError && candidatesError.code !== '42P01') {
-                throw new Error(`Gagal memuat kandidat: ${candidatesError.message}`);
+        // Process results for array data
+        results.slice(0, tableConfigs.length).forEach((result, index) => {
+            const config = tableConfigs[index];
+            if (result.status === 'fulfilled') {
+                const { data, error } = result.value as { data: any[] | null, error: any | null };
+                if (error && error.code !== 'PGRST116') { // PGRST116: "The result contains 0 rows"
+                    console.error(`Error loading ${config.name}:`, error.message);
+                } else {
+                    config.setter(data || []);
+                }
+            } else {
+                console.warn(`[Robustness] Gagal memuat tabel '${config.name}'. Fitur terkait mungkin tidak akan tampil. Pesan:`, result.reason.message);
+                config.setter([]); // Set empty array on failure
             }
-            setActiveEVotingEvent({ ...activeEventData, candidates: candidates || [] });
-          } else {
-            setActiveEVotingEvent(null);
-          }
+        });
+        
+        // Process results for single objects
+        const siteContentResult = results[tableConfigs.length];
+        if (siteContentResult.status === 'fulfilled') {
+            const { data, error } = siteContentResult.value as { data: SiteContent | null, error: any | null };
+            if (data && !error) _setSiteContent(data);
+            else console.warn("Failed to fetch siteContent, using initial data.");
+        } else console.warn("Promise for siteContent rejected:", siteContentResult.reason.message);
+        
+        const siteSettingsResult = results[tableConfigs.length + 1];
+        if (siteSettingsResult.status === 'fulfilled') {
+            const { data, error } = siteSettingsResult.value as { data: SiteSettings | null, error: any | null };
+            if (data && !error) _setSiteSettings(data);
+            else console.warn("Failed to fetch siteSettings, using initial data.");
+        } else console.warn("Promise for siteSettings rejected:", siteSettingsResult.reason.message);
+
+        // Gracefully fetch e-voting data
+        try {
+            const { data: activeEventData, error: activeEventError } = await supabase
+                .from('evoting_events')
+                .select('*')
+                .eq('is_active', true)
+                .limit(1)
+                .single();
+
+            if (activeEventError && activeEventError.code !== 'PGRST116') {
+                throw activeEventError;
+            }
+
+            if (activeEventData) {
+                const { data: candidates, error: candidatesError } = await supabase.from('evoting_candidates').select('*').eq('event_id', activeEventData.id);
+                if (candidatesError) throw candidatesError;
+                setActiveEVotingEvent({ ...activeEventData, candidates: candidates || [] });
+            } else {
+                setActiveEVotingEvent(null);
+            }
         } catch (evotingErr: any) {
-            console.warn(`Could not load E-Voting feature: ${evotingErr.message}. This might be because the E-Voting tables are not set up in Supabase. Check the SQL comments in ManageEVoting.tsx for schema details.`);
-            setActiveEVotingEvent(null); // Ensure it's null on error
+            console.warn(`[Robustness] Gagal memuat fitur E-Voting. Pastikan tabel 'evoting_events' dan 'evoting_candidates' ada. Pesan:`, evotingErr.message);
+            setActiveEVotingEvent(null);
         }
 
-      } catch (err: any) {
-        // This will now only catch errors from the core data fetch
-        setError(err.message);
-        addToast("Gagal memuat data utama. Pastikan kredensial dan tabel Supabase benar.", 'error');
-        console.error(err);
-      }
-      setIsLoading(false);
+        setIsLoading(false);
     };
     loadData();
   }, []);
   
-  // Persist auth state to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ adminPassword }));
@@ -224,9 +244,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const refreshData = async (tableName: TableName) => {
-      if (tableName.startsWith('evoting')) return; // E-Voting is handled separately in its component
+      if (tableName.startsWith('evoting') || tableName === 'event_registrations') return;
 
-      // Map dataKey to the correct table name and state setter
       const sortConfig = tableSortConfig[tableName] || { column: 'id', ascending: false };
 
       try {
@@ -252,7 +271,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
   };
 
-  const addItem = async (tableName: TableName, item: Omit<any, 'id'| 'created_at'>) => {
+  const addItem = async (tableName: TableName, item: Omit<any, 'id'| 'created_at' | 'registered_at'>) => {
       try {
           const { data, error } = await supabase.from(tableName).insert([item]).select();
           if (error) throw error;
@@ -265,7 +284,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
   };
 
-  const updateItem = async (tableName: TableName, id: number, item: Omit<any, 'id'| 'created_at'>) => {
+  const updateItem = async (tableName: TableName, id: number, item: Omit<any, 'id'| 'created_at' | 'registered_at'>) => {
       try {
           const { error } = await supabase.from(tableName).update(item).eq('id', id);
           if (error) throw error;
@@ -320,9 +339,33 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await addItem('saran', newSaran);
         addToast('Saran Anda berhasil dikirim. Terima kasih!', 'success');
     } catch (error) {
-        // Error toast is already handled in addItem
         console.error("Failed to submit suggestion:", error);
     }
+  };
+  
+  const registerForEvent = async (registration: Omit<EventRegistration, 'id' | 'registered_at'>) => {
+    try {
+        await addItem('event_registrations', registration);
+        addToast('Anda berhasil terdaftar!', 'success');
+    } catch (error) {
+        console.error("Failed to register for event:", error);
+    }
+  };
+
+  const getRegistrationsForEvent = async (eventId: number): Promise<EventRegistration[]> => {
+      try {
+          const { data, error } = await supabase
+              .from('event_registrations')
+              .select('*')
+              .eq('event_id', eventId)
+              .order('registered_at', { ascending: false });
+          if (error) throw error;
+          return data;
+      } catch (error: any) {
+          console.error('Failed to fetch registrations:', error);
+          addToast(`Gagal memuat pendaftar: ${error.message}`, 'error');
+          return [];
+      }
   };
 
   const addToast = (message: string, type: Toast['type']) => {
@@ -395,7 +438,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const generateTokens = async (eventId: number, count: number): Promise<string[]> => {
       const newTokens = [];
-      const createdTokens = [];
       for (let i = 0; i < count; i++) {
           const token = Math.random().toString(36).substring(2, 8).toUpperCase();
           newTokens.push({ event_id: eventId, token });
@@ -424,9 +466,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const value = {
-    announcements, events, articles, achievements, gallery, testimonials, osisTeam, stats, siteContent, siteSettings, saran, activeEVotingEvent,
+    announcements, events, articles, achievements, gallery, testimonials, osisTeam, stats, documents, financials, siteContent, siteSettings, saran, activeEVotingEvent,
     isLoading, error,
-    addItem, updateItem, deleteItem, updateSiteContent, updateSiteSettings, addSaran,
+    addItem, updateItem, deleteItem, updateSiteContent, updateSiteSettings, addSaran, registerForEvent, getRegistrationsForEvent,
     castVote, fetchEVotingEvents, fetchCandidatesForEvent, generateTokens, getVoteResults,
     isLoggedIn, login, logout, showLogin, setShowLogin, activeAdminSection, setActiveAdminSection, updatePassword,
     toasts, addToast,

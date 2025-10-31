@@ -5,14 +5,14 @@ import ConfirmModal from './ui/ConfirmModal.tsx';
 import Modal from './ui/Modal.tsx';
 
 const CandidateCard: React.FC<{ candidate: EVotingCandidate; onSelect: () => void; isSelected: boolean; isVotingAllowed: boolean; showDetails: () => void; }> = ({ candidate, onSelect, isSelected, isVotingAllowed, showDetails }) => (
-    <div className={`border-2 rounded-lg p-4 text-center transition-all duration-300 ${isSelected ? 'border-brand-blue-600 ring-4 ring-brand-blue-200 dark:ring-brand-blue-800' : 'border-gray-200 dark:border-gray-700'}`}>
+    <div className={`card-lift-glow border-2 rounded-lg p-4 text-center transition-all duration-300 ${isSelected ? 'border-brand-blue-600 ring-4 ring-brand-blue-200 dark:ring-brand-blue-800' : 'border-gray-200 dark:border-gray-700'}`}>
         <img src={candidate.image_url} alt={candidate.name} className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-white dark:border-gray-600 shadow-md" />
         <h3 className="text-xl font-bold text-gray-900 dark:text-white">{candidate.name}</h3>
         <button onClick={showDetails} className="text-sm text-brand-blue-600 dark:text-brand-blue-400 hover:underline mt-1">Lihat Visi & Misi</button>
         <button 
             onClick={onSelect}
             disabled={!isVotingAllowed}
-            className={`w-full mt-4 font-bold py-2 px-4 rounded-md transition-colors ${
+            className={`w-full mt-4 font-bold py-2 px-4 rounded-md transition-colors duration-300 ${
                 isSelected 
                 ? 'bg-brand-blue-600 text-white' 
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
@@ -37,6 +37,13 @@ const EVotingSection: React.FC = () => {
     }
     
     const selectedCandidate = activeEVotingEvent.candidates.find(c => c.id === selectedCandidateId);
+    
+    const handleShare = () => {
+        const text = `Ayo gunakan hak pilihmu di ${activeEVotingEvent.title}! Kunjungi website OSIS sekarang.`;
+        const url = window.location.href;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`;
+        window.open(whatsappUrl, '_blank');
+    };
 
     const handleVote = async () => {
         if (!token.trim() || !selectedCandidateId) {
@@ -62,6 +69,14 @@ const EVotingSection: React.FC = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-4">Terima Kasih!</h2>
                         <p className="mt-2 text-gray-600 dark:text-gray-300">Suara Anda telah berhasil direkam. Partisipasi Anda sangat berarti untuk masa depan OSIS.</p>
+                        <button 
+                            onClick={handleShare}
+                            className="mt-6 bg-whatsapp text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center mx-auto hover:opacity-90 transition-opacity"
+                            style={{backgroundColor: '#25D366'}}
+                        >
+                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M.052 24l3.773-13.886a9.928 9.928 0 0116.146-6.17L24 0l-1.42 6.17a9.928 9.928 0 01-16.298 9.38L.052 24z"/></svg>
+                            Ajak Teman Memilih
+                        </button>
                     </div>
                 </div>
             </section>
@@ -71,25 +86,26 @@ const EVotingSection: React.FC = () => {
     return (
         <section id="evoting" className="bg-white dark:bg-gray-800/50 py-16 sm:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-12">
+                <div className="text-center max-w-3xl mx-auto mb-12" data-aos="fade-up">
                     <h2 className="text-3xl font-bold tracking-tight text-brand-blue-700 dark:text-brand-blue-400 sm:text-4xl">E-Voting: {activeEVotingEvent.title}</h2>
                     <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">{activeEVotingEvent.description}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                    {activeEVotingEvent.candidates.map(candidate => (
-                        <CandidateCard 
-                            key={candidate.id} 
-                            candidate={candidate}
-                            onSelect={() => setSelectedCandidateId(candidate.id)}
-                            isSelected={selectedCandidateId === candidate.id}
-                            isVotingAllowed={!!token.trim()}
-                            showDetails={() => setDetailsCandidate(candidate)}
-                        />
+                    {activeEVotingEvent.candidates.map((candidate, index) => (
+                        <div key={candidate.id} data-aos="fade-up" data-aos-delay={index * 100}>
+                            <CandidateCard 
+                                candidate={candidate}
+                                onSelect={() => setSelectedCandidateId(candidate.id)}
+                                isSelected={selectedCandidateId === candidate.id}
+                                isVotingAllowed={!!token.trim()}
+                                showDetails={() => setDetailsCandidate(candidate)}
+                            />
+                        </div>
                     ))}
                 </div>
 
-                <div className="max-w-md mx-auto bg-gray-50 dark:bg-gray-900 p-6 rounded-lg shadow-md border dark:border-gray-700">
+                <div className="max-w-md mx-auto bg-gray-50 dark:bg-gray-900 p-6 rounded-lg shadow-md border dark:border-gray-700" data-aos="fade-up" data-aos-delay="300">
                      <h3 className="text-lg font-bold text-center text-gray-800 dark:text-white">Masukkan Token Anda</h3>
                      <p className="text-sm text-center text-gray-500 mb-4">Gunakan token unik yang telah diberikan untuk memberikan suara.</p>
                      <input
@@ -103,7 +119,7 @@ const EVotingSection: React.FC = () => {
                     <button
                         onClick={() => setIsConfirming(true)}
                         disabled={!token || !selectedCandidateId || isLoading}
-                        className="w-full mt-4 bg-brand-blue-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-brand-blue-800 transition-colors disabled:bg-brand-blue-400 disabled:cursor-not-allowed flex items-center justify-center"
+                        className="btn-animated w-full mt-4 bg-brand-blue-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-brand-blue-800 disabled:bg-brand-blue-400 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                         {isLoading ? (
                             <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

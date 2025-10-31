@@ -8,6 +8,7 @@ export interface SiteContent {
   // FIX: Add id property to match database schema and fix type errors.
   id: number;
   siteName: string;
+  siteLogoUrl: string;
   heroBackgroundImage: string;
   headerNavLinks: NavLink[];
   footerNavLinks: NavLink[];
@@ -47,6 +48,8 @@ export type AdminSection =
   | 'testimonials'
   | 'osisTeam'
   | 'stats'
+  | 'documents'
+  | 'financials'
   | 'content'
   | 'settings'
   | 'saran'
@@ -67,6 +70,9 @@ export interface Event {
   time: string;
   location: string;
   description: string;
+  is_registration_open?: boolean;
+  is_live?: boolean;
+  live_stream_url?: string;
 }
 
 export interface Article {
@@ -114,6 +120,7 @@ export interface Stat {
     value: number;
     label: string;
     suffix?: string;
+    icon?: string;
 }
 
 export interface Saran {
@@ -149,4 +156,28 @@ export interface EVotingToken {
   is_used: boolean;
   used_at: string | null;
   voted_for_candidate_id: number | null;
+}
+
+export interface Document {
+    id: number;
+    title: string;
+    description: string;
+    file_url: string;
+    category: string;
+}
+
+export interface FinancialRecord {
+    id: number;
+    category: string;
+    amount: number;
+    type: 'income' | 'expense';
+    period: string;
+}
+
+export interface EventRegistration {
+    id: number;
+    event_id: number;
+    name: string;
+    class: string;
+    registered_at: string;
 }

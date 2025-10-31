@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useData } from '../context/DataContext.tsx';
@@ -11,7 +9,7 @@ interface Idea {
 }
 
 const IdeaCard: React.FC<{ idea: Idea }> = ({ idea }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-brand-yellow-400">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-brand-yellow-400 animate-fade-in-up">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{idea.name}</h3>
         <p className="text-gray-600 dark:text-gray-300 mb-4">{idea.description}</p>
         <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Contoh Kegiatan:</h4>
@@ -41,7 +39,7 @@ const ProgramIdeaGenerator: React.FC = () => {
 
         try {
             if (!process.env.API_KEY) {
-                throw new Error("API key is not configured.");
+                throw new Error("API key for Gemini is not configured.");
             }
             
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -55,11 +53,11 @@ const ProgramIdeaGenerator: React.FC = () => {
                         items: {
                             type: Type.OBJECT,
                             properties: {
-                                name: { type: Type.STRING, description: "Catchy name for the event." },
-                                description: { type: Type.STRING, description: "A brief 2-3 sentence description." },
+                                name: { type: Type.STRING, description: "Catchy name for the event in Indonesian." },
+                                description: { type: Type.STRING, description: "A brief 2-3 sentence description in Indonesian." },
                                 activities: {
                                     type: Type.ARRAY,
-                                    description: "A list of 3-5 key activities.",
+                                    description: "A list of 3-5 key activities in Indonesian.",
                                     items: { type: Type.STRING }
                                 }
                             },
@@ -70,7 +68,7 @@ const ProgramIdeaGenerator: React.FC = () => {
                 required: ["ideas"]
             };
 
-            const prompt = `You are a creative consultant for high school events. Generate three unique and engaging event ideas based on the theme: "${topic}". The ideas should be feasible for a high school student council to organize. For each idea, provide a catchy name, a short description (2-3 sentences), and a list of 3-5 key activities.`;
+            const prompt = `You are a creative consultant for a high school student council (OSIS) in Indonesia. Generate three unique and engaging event ideas based on the theme: "${topic}". The ideas should be feasible for a high school student council to organize. All output must be in Bahasa Indonesia. For each idea, provide a catchy name, a short description (2-3 sentences), and a list of 3-5 key activities.`;
 
             const response = await ai.models.generateContent({
                 model: "gemini-2.5-flash",
@@ -92,7 +90,7 @@ const ProgramIdeaGenerator: React.FC = () => {
 
         } catch (err) {
             console.error(err);
-            setError("Maaf, terjadi kesalahan saat menghasilkan ide. Coba lagi nanti.");
+            setError("Maaf, terjadi kesalahan saat menghasilkan ide. Pastikan API Key valid dan coba lagi nanti.");
         } finally {
             setIsLoading(false);
         }
@@ -101,14 +99,14 @@ const ProgramIdeaGenerator: React.FC = () => {
     return (
         <section id="idea-generator" className="bg-brand-blue-50 dark:bg-brand-blue-900/20 py-16 sm:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-12">
+                <div className="text-center max-w-3xl mx-auto mb-12" data-aos="fade-up">
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">{siteContent.ideaGeneratorTitle}</h2>
                     <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
                         {siteContent.ideaGeneratorDescription}
                     </p>
                 </div>
                 
-                <form onSubmit={generateIdeas} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3 mb-12">
+                <form onSubmit={generateIdeas} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-3 mb-12" data-aos="fade-up" data-aos-delay="100">
                     <input
                         type="text"
                         value={topic}
@@ -120,7 +118,7 @@ const ProgramIdeaGenerator: React.FC = () => {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full sm:w-auto bg-brand-blue-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-brand-blue-800 transition-colors disabled:bg-brand-blue-400 disabled:cursor-not-allowed flex items-center justify-center"
+                        className="btn-animated w-full sm:w-auto bg-brand-blue-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-brand-blue-800 disabled:bg-brand-blue-400 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                         {isLoading ? (
                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -131,7 +129,7 @@ const ProgramIdeaGenerator: React.FC = () => {
                     </button>
                 </form>
 
-                {error && <p className="text-center text-red-500 bg-red-100 p-3 rounded-md max-w-xl mx-auto">{error}</p>}
+                {error && <p className="text-center text-red-500 bg-red-100 dark:bg-red-900/50 dark:text-red-300 p-3 rounded-md max-w-xl mx-auto">{error}</p>}
                 
                 <div className="max-w-4xl mx-auto mt-8 space-y-6">
                     {ideas.map((idea, index) => (

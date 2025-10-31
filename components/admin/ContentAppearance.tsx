@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, FormEvent } from 'react';
 import { useData } from '../../context/DataContext.tsx';
 import { NavLink } from '../../types.ts';
@@ -128,6 +126,13 @@ const ContentAppearance: React.FC = () => {
                             />
                         </div>
                         <div>
+                            <label className="block text-sm font-medium text-gray-700">URL Logo Situs</label>
+                            <input
+                                type="url" name="siteLogoUrl" value={formData.siteLogoUrl} onChange={handleChange}
+                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500"
+                            />
+                        </div>
+                        <div>
                             <label className="block text-sm font-medium text-gray-700">URL Gambar Latar Hero</label>
                             <input
                                 type="url" name="heroBackgroundImage" value={formData.heroBackgroundImage} onChange={handleChange} required
@@ -160,7 +165,7 @@ const ContentAppearance: React.FC = () => {
                     </div>
                 </Card>
 
-                 <Card title="Seksi 'Generator Ide'">
+                <Card title="Seksi 'Generator Ide Program AI'">
                      <div className="space-y-4">
                          <div>
                             <label className="block text-sm font-medium text-gray-700">Judul</label>
@@ -172,7 +177,7 @@ const ContentAppearance: React.FC = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Deskripsi</label>
                              <textarea
-                                name="ideaGeneratorDescription" value={formData.ideaGeneratorDescription} onChange={handleChange} required rows={3}
+                                name="ideaGeneratorDescription" value={formData.ideaGeneratorDescription} onChange={handleChange} required rows={4}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500"
                             />
                         </div>

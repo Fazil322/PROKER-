@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData, TableName } from '../../context/DataContext.tsx';
-import { AdminSection } from '../../types.ts';
+import { AdminSection, EventRegistration } from '../../types.ts';
 import GenericForm, { Field } from './forms/GenericForm.tsx';
 import ConfirmModal from '../ui/ConfirmModal.tsx';
 import Modal from '../ui/Modal.tsx';
@@ -24,6 +24,9 @@ const sectionConfig: Record<string, { title: string; fields: Field[]; dataKey: T
             { name: 'time', label: 'Waktu (display)', type: 'text', required: true },
             { name: 'location', label: 'Lokasi', type: 'text', required: true },
             { name: 'description', label: 'Deskripsi', type: 'textarea', rows: 3 },
+            { name: 'is_registration_open', label: 'Buka Pendaftaran', type: 'checkbox' },
+            { name: 'is_live', label: 'Sedang Live', type: 'checkbox' },
+            { name: 'live_stream_url', label: 'URL Live Stream (Embed)', type: 'url' },
         ]
     },
     articles: {
@@ -83,6 +86,27 @@ const sectionConfig: Record<string, { title: string; fields: Field[]; dataKey: T
             { name: 'label', label: 'Label', type: 'text', required: true },
             { name: 'value', label: 'Nilai', type: 'number', required: true },
             { name: 'suffix', label: 'Suffix (e.g., +)', type: 'text' },
+            { name: 'icon', label: 'Ikon (SVG string)', type: 'textarea', rows: 3 },
+        ]
+    },
+    documents: {
+        title: 'Dokumen Publik',
+        dataKey: 'documents',
+        fields: [
+            { name: 'title', label: 'Judul Dokumen', type: 'text', required: true },
+            { name: 'description', label: 'Deskripsi Singkat', type: 'textarea', rows: 2 },
+            { name: 'file_url', label: 'URL Dokumen (PDF, etc)', type: 'url', required: true },
+            { name: 'category', label: 'Kategori', type: 'text' },
+        ]
+    },
+    financials: {
+        title: 'Keuangan',
+        dataKey: 'financials',
+        fields: [
+            { name: 'category', label: 'Kategori', type: 'text', required: true },
+            { name: 'amount', label: 'Jumlah (Rp)', type: 'number', required: true },
+            { name: 'type', label: 'Tipe', type: 'select', options: ['income', 'expense'], required: true },
+            { name: 'period', label: 'Periode (e.g. 2023/2024)', type: 'text', required: true },
         ]
     },
      saran: {
@@ -96,12 +120,15 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
     const config = sectionConfig[section];
     if (!config) return <div>Konfigurasi untuk seksi '{section}' tidak ditemukan.</div>;
 
-    const { addItem, updateItem, deleteItem, addToast, ...dataContext } = useData();
+    const { addItem, updateItem, deleteItem, addToast, getRegistrationsForEvent, ...dataContext } = useData();
     const items = (dataContext as any)[config.dataKey] as any[];
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any | null>(null);
     const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
+    
+    const [registrants, setRegistrants] = useState<EventRegistration[]>([]);
+    const [viewingRegistrantsEvent, setViewingRegistrantsEvent] = useState<any | null>(null);
 
     const handleOpenModal = (item: any | null = null) => {
         setEditingItem(item);
@@ -115,17 +142,16 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
 
     const handleSubmit = async (formData: any) => {
         try {
-            if (editingItem) { // Update
+            if (editingItem) {
                 await updateItem(config.dataKey as TableName, editingItem.id, formData);
                 addToast(`${config.title} berhasil diperbarui!`, 'success');
-            } else { // Create
+            } else {
                 await addItem(config.dataKey as TableName, formData);
                 addToast(`${config.title} baru berhasil ditambahkan!`, 'success');
             }
             handleCloseModal();
         } catch (error) {
             console.error("Submit failed:", error);
-            // Error toast is already handled in context
         }
     };
 
@@ -139,15 +165,20 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
         }
     };
     
+    const handleViewRegistrants = async (event: any) => {
+        const data = await getRegistrationsForEvent(event.id);
+        setRegistrants(data);
+        setViewingRegistrantsEvent(event);
+    };
+
     if (section === 'saran') {
-      const saranItems = dataContext.saran;
       return (
         <div>
           <h1 className="text-3xl font-bold text-gray-800 mb-8">Kelola {config.title}</h1>
           <div className="bg-white p-4 rounded-lg shadow-md">
-            {saranItems.length === 0 ? <p>Belum ada saran yang masuk.</p> : (
+            {items.length === 0 ? <p>Belum ada saran yang masuk.</p> : (
               <ul className="space-y-4">
-                {saranItems.map(item => (
+                {items.map(item => (
                   <li key={item.id} className="border p-4 rounded-md bg-gray-50">
                     <p className="font-semibold">{item.suggestion}</p>
                     <p className="text-sm text-gray-500 mt-2">Dari: {item.name} ({item.class}) pada {new Date(item.created_at).toLocaleString('id-ID')}</p>
@@ -193,9 +224,12 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
                             {items && items.map(item => (
                                 <tr key={item.id} className="bg-white border-b hover:bg-gray-50">
                                     {config.fields.slice(0, 4).map(field => (
-                                        <td key={field.name} className="px-6 py-4">{String(item[field.name]).substring(0, 50)}{String(item[field.name]).length > 50 ? '...' : ''}</td>
+                                        <td key={field.name} className="px-6 py-4">
+                                            {field.type === 'checkbox' ? (item[field.name] ? 'Ya' : 'Tidak') : String(item[field.name]).substring(0, 50) + (String(item[field.name]).length > 50 ? '...' : '')}
+                                        </td>
                                     ))}
-                                    <td className="px-6 py-4 space-x-2">
+                                    <td className="px-6 py-4 space-x-2 whitespace-nowrap">
+                                        {section === 'events' && <button onClick={() => handleViewRegistrants(item)} className="font-medium text-purple-600 hover:underline">Pendaftar</button>}
                                         <button onClick={() => handleOpenModal(item)} className="font-medium text-brand-blue-600 hover:underline">Edit</button>
                                         <button onClick={() => setDeletingItemId(item.id)} className="font-medium text-red-600 hover:underline">Hapus</button>
                                     </td>
@@ -222,6 +256,22 @@ const ManageSection: React.FC<{ section: AdminSection }> = ({ section }) => {
                 title={`Hapus ${config.title}`}
                 message={`Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.`}
             />
+
+            {viewingRegistrantsEvent && (
+                <Modal isOpen={!!viewingRegistrantsEvent} onClose={() => setViewingRegistrantsEvent(null)} title={`Pendaftar: ${viewingRegistrantsEvent.title}`}>
+                    {registrants.length > 0 ? (
+                        <ul className="space-y-2 max-h-80 overflow-y-auto">
+                            {registrants.map(reg => (
+                                <li key={reg.id} className="p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
+                                    <span className="font-semibold text-gray-800 dark:text-white">{reg.name}</span> - <span className="text-sm text-gray-600 dark:text-gray-300">{reg.class}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-500 text-center">Belum ada pendaftar untuk acara ini.</p>
+                    )}
+                </Modal>
+            )}
         </div>
     );
 };

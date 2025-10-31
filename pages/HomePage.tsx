@@ -1,8 +1,6 @@
-
 import React from 'react';
 import Header from '../components/Header.tsx';
 import HeroSection from '../components/HeroSection.tsx';
-import Announcements from '../components/Announcements.tsx';
 import UpcomingEvents from '../components/UpcomingEvents.tsx';
 import LatestNews from '../components/LatestNews.tsx';
 import Achievements from '../components/Achievements.tsx';
@@ -11,13 +9,16 @@ import StatsCounter from '../components/StatsCounter.tsx';
 import Testimonials from '../components/Testimonials.tsx';
 import Footer from '../components/Footer.tsx';
 import AboutOsis from '../components/AboutOsis.tsx';
-import ProgramIdeaGenerator from '../components/ProgramIdeaGenerator.tsx';
 import KotakSaran from '../components/KotakSaran.tsx';
 import AdminControl from '../components/ui/AdminControl.tsx';
-import AnimatedSection from '../components/ui/AnimatedSection.tsx';
 import BackToTopButton from '../components/BackToTopButton.tsx';
 import ReadingProgressBar from '../components/ui/ReadingProgressBar.tsx';
 import EVotingSection from '../components/EVotingSection.tsx';
+import Announcements from '../components/Announcements.tsx';
+import LiveStreamBanner from '../components/LiveStreamBanner.tsx';
+import PublicDocuments from '../components/PublicDocuments.tsx';
+import FinancialTransparency from '../components/FinancialTransparency.tsx';
+import ProgramIdeaGenerator from '../components/ProgramIdeaGenerator.tsx';
 
 const HomePage: React.FC = () => {
   return (
@@ -29,71 +30,85 @@ const HomePage: React.FC = () => {
             <HeroSection />
         </AdminControl>
         
-        <AnimatedSection>
+        <LiveStreamBanner />
+
+        <div data-aos="fade-up">
             <AdminControl section="evoting">
                 <EVotingSection />
             </AdminControl>
-        </AnimatedSection>
-
-        <AnimatedSection>
+        </div>
+        
+        <div data-aos="fade-up" id="announcements-cards">
             <AdminControl section="announcements">
                 <Announcements />
             </AdminControl>
-        </AnimatedSection>
-        
-        <AnimatedSection>
+        </div>
+
+        <div data-aos="fade-up">
             <AdminControl section="events">
                 <UpcomingEvents />
             </AdminControl>
-        </AnimatedSection>
+        </div>
+        
+        <div data-aos="fade-up">
+            <AdminControl section="financials">
+                <FinancialTransparency />
+            </AdminControl>
+        </div>
 
-        <AnimatedSection>
+        <div data-aos="fade-up">
+            <AdminControl section="documents">
+                <PublicDocuments />
+            </AdminControl>
+        </div>
+
+        <div data-aos="fade-up">
             <AdminControl section="articles">
                 <LatestNews />
             </AdminControl>
-        </AnimatedSection>
+        </div>
 
-        <AnimatedSection>
+        <div data-aos="fade-up">
             <AdminControl section="achievements">
                 <Achievements />
             </AdminControl>
-        </AnimatedSection>
+        </div>
         
-        <AnimatedSection>
+        <div data-aos="fade-up">
             <AdminControl section="stats">
                 <StatsCounter />
             </AdminControl>
-        </AnimatedSection>
+        </div>
 
-        <AnimatedSection>
+        <div data-aos="fade-up">
             <AdminControl section="gallery">
                 <GalleryPreview />
             </AdminControl>
-        </AnimatedSection>
+        </div>
 
-        <AnimatedSection>
+        <div data-aos="fade-up">
            <AdminControl section="osisTeam">
              <AboutOsis />
            </AdminControl>
-        </AnimatedSection>
+        </div>
 
-        <AnimatedSection>
+        <div data-aos="fade-up">
             <AdminControl section="content">
                 <ProgramIdeaGenerator />
             </AdminControl>
-        </AnimatedSection>
-
-        <AnimatedSection>
+        </div>
+        
+        <div data-aos="fade-up">
             <AdminControl section="testimonials">
                 <Testimonials />
             </AdminControl>
-        </AnimatedSection>
+        </div>
 
-        <AnimatedSection>
+        <div data-aos="fade-up">
             <AdminControl section="saran">
                 <KotakSaran />
             </AdminControl>
-        </AnimatedSection>
+        </div>
         
       </main>
       <Footer />
